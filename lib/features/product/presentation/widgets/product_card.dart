@@ -26,10 +26,11 @@ class _ProductCardState extends State<ProductCard> {
       onTap: widget.onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Product Image Container
-          Expanded(
-            flex: 3,
+          AspectRatio(
+            aspectRatio: 1.0,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -136,8 +137,8 @@ class _ProductCardState extends State<ProductCard> {
           ),
           const SizedBox(height: 8),
           // Product Title
-          Expanded(
-            flex: 1,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
               widget.product.name,
               style: const TextStyle(
@@ -151,37 +152,40 @@ class _ProductCardState extends State<ProductCard> {
           ),
           const SizedBox(height: 6),
           // Price and Add Button Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Price Column
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Current Price (Red)
-                    Text(
-                      '₹${widget.product.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryRed,
-                      ),
-                    ),
-                    // Original Price (Strikethrough) - if discounted
-                    if (widget.product.mrp > widget.product.price)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Price Column
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Current Price (Red)
                       Text(
-                        '₹${widget.product.mrp.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          decoration: TextDecoration.lineThrough,
-                          color: AppColors.textGrey,
+                        '₹${widget.product.price.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primaryRed,
                         ),
                       ),
-                  ],
+                      // Original Price (Strikethrough) - if discounted
+                      if (widget.product.mrp > widget.product.price)
+                        Text(
+                          '₹${widget.product.mrp.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            decoration: TextDecoration.lineThrough,
+                            color: AppColors.textGrey,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
               // Add to Cart Button (Red Circle with +)
               GestureDetector(
                 onTap: () {

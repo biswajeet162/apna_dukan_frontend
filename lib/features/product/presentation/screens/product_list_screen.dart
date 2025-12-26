@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
 import '../widgets/product_card.dart';
+import '../widgets/flash_sale_card.dart';
+import '../widgets/product_card_enhanced.dart';
 import 'product_detail_screen.dart';
 import '../../../../core/constants/app_colors.dart';
 
-/// Product list screen matching the design
+/// Home screen matching the exact design
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
 
@@ -17,7 +19,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   int _selectedCategoryIndex = 0;
-  final List<String> _categories = ['Fashion', 'Tech', 'Home', 'Beauty', 'Sports'];
+  final List<Map<String, dynamic>> _categories = [
+    {'name': 'Fashion', 'icon': Icons.checkroom, 'color': AppColors.primaryRed},
+    {'name': 'Tech', 'icon': Icons.devices_other, 'color': Colors.purple},
+    {'name': 'Home', 'icon': Icons.home_outlined, 'color': Colors.green},
+    {'name': 'Beauty', 'icon': Icons.brush_outlined, 'color': Colors.green.shade700},
+    {'name': 'Sports', 'icon': Icons.sports_esports_outlined, 'color': Colors.orange},
+  ];
+
+  // Timer state for flash sale
+  int _hours = 2;
+  int _minutes = 14;
+  int _seconds = 59;
 
   @override
   void initState() {
@@ -26,6 +39,31 @@ class _ProductListScreenState extends State<ProductListScreen> {
       context.read<ProductProvider>().loadProducts(refresh: true);
     });
     _scrollController.addListener(_onScroll);
+    _startTimer();
+  }
+
+  void _startTimer() {
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        setState(() {
+          _seconds--;
+          if (_seconds < 0) {
+            _seconds = 59;
+            _minutes--;
+            if (_minutes < 0) {
+              _minutes = 59;
+              _hours--;
+              if (_hours < 0) {
+                _hours = 0;
+                _minutes = 0;
+                _seconds = 0;
+              }
+            }
+          }
+        });
+        _startTimer();
+      }
+    });
   }
 
   @override
@@ -50,19 +88,22 @@ class _ProductListScreenState extends State<ProductListScreen> {
     }
   }
 
+  String _formatTimer() {
+    return '${_hours.toString().padLeft(2, '0')}:${_minutes.toString().padLeft(2, '0')}:${_seconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top greeting + icons
+            // Top Header
             _buildHeader(),
             // Search Bar
             _buildSearchBar(),
-            // Rest of the scrollable home content
+            // Scrollable Content
             Expanded(
               child: _buildHomeContent(),
             ),
@@ -78,7 +119,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          // Avatar
+          // Avatar with "B"
           Container(
             height: 40,
             width: 40,
@@ -91,6 +132,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 'B',
                 style: TextStyle(
                   color: Colors.white,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -120,24 +162,48 @@ class _ProductListScreenState extends State<ProductListScreen> {
             ],
           ),
           const Spacer(),
-          // Cart with badge
+          // Notification icon with purple dot
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined, color: AppColors.textPrimary),
+                onPressed: () {},
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: Colors.purple,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Cart icon with red badge
           Stack(
             clipBehavior: Clip.none,
             children: [
               IconButton(
                 icon: const Icon(Icons.shopping_bag_outlined, color: AppColors.textPrimary),
-                onPressed: () {
-                  // TODO: Navigate to cart
-                },
+                onPressed: () {},
               ),
               Positioned(
                 right: 6,
                 top: 8,
                 child: Container(
-                  padding: const EdgeInsets.all(3),
+                  padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
                     color: AppColors.primaryRed,
                     shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
                   ),
                   child: const Text(
                     '3',
@@ -146,16 +212,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
             ],
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: AppColors.textPrimary),
-            onPressed: () {
-              // Navigate to notifications
-            },
           ),
         ],
       ),
@@ -225,9 +286,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     color: Colors.red,
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'Failed to load products',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -256,15 +317,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Check your internet connection and that the demo server is reachable.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textGrey,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
                 ],
               ),
             ),
@@ -278,16 +330,102 @@ class _ProductListScreenState extends State<ProductListScreen> {
         }
 
         final products = provider.products;
+        // Mock sold percentages for flash sale items
+        final flashSalePercentages = [60.0, 85.0, 40.0, 70.0, 55.0];
 
         return RefreshIndicator(
           onRefresh: () => provider.loadProducts(refresh: true),
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              // Categories row
+              // Summer Sale Banner
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Container(
+                    height: 160,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF2C2C2C), Color(0xFF5A2BFF), Color(0xFFFF6584)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // SUMMER VIBES tag
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Text(
+                                  'SUMMER VIBES',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                              ),
+                              // Summer Sale text
+                              const Text(
+                                'Summer Sale',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              // Description
+                              const Text(
+                                'Up to 50% off on vibrant collections',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              // Shop Now button
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primaryRed,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: const Text(
+                                  'Shop Now',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Categories Section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -301,19 +439,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                       const SizedBox(height: 12),
                       SizedBox(
-                        height: 72,
+                        height: 80,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: _categories.length,
                           itemBuilder: (context, index) {
+                            final category = _categories[index];
                             final isSelected = index == _selectedCategoryIndex;
-                            final icons = [
-                              Icons.checkroom,
-                              Icons.devices_other,
-                              Icons.home_outlined,
-                              Icons.brush_outlined,
-                              Icons.sports_esports_outlined,
-                            ];
                             return Padding(
                               padding: EdgeInsets.only(right: index == _categories.length - 1 ? 0 : 12),
                               child: GestureDetector(
@@ -321,7 +453,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                   setState(() {
                                     _selectedCategoryIndex = index;
                                   });
-                                  // Simple behaviour: reload or category filter hook
                                   if (index == 0) {
                                     provider.loadProducts(refresh: true);
                                   } else {
@@ -331,33 +462,35 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 child: Column(
                                   children: [
                                     Container(
-                                      height: 44,
-                                      width: 44,
+                                      height: 56,
+                                      width: 56,
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? AppColors.primaryRed.withOpacity(0.12)
+                                            ? (category['color'] as Color).withOpacity(0.1)
                                             : Colors.white,
                                         borderRadius: BorderRadius.circular(16),
                                         border: Border.all(
                                           color: isSelected
-                                              ? AppColors.primaryRed
+                                              ? (category['color'] as Color)
                                               : Colors.grey.shade300,
+                                          width: isSelected ? 2 : 1,
                                         ),
                                       ),
                                       child: Icon(
-                                        icons[index],
-                                        size: 22,
+                                        category['icon'] as IconData,
+                                        size: 28,
                                         color: isSelected
-                                            ? AppColors.primaryRed
+                                            ? (category['color'] as Color)
                                             : AppColors.textSecondary,
                                       ),
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      _categories[index],
-                                      style: const TextStyle(
+                                      category['name'] as String,
+                                      style: TextStyle(
                                         fontSize: 12,
                                         color: AppColors.textSecondary,
+                                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                                       ),
                                     ),
                                   ],
@@ -372,115 +505,46 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
               ),
 
-              // Flash sale banner + horizontal list
+              // Flash Sale Section
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Banner
-                      Container(
-                        height: 140,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF5A2BFF), Color(0xFFFF6584)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text(
-                                'SUMMER VIBES',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                  letterSpacing: 0.8,
-                                ),
-                              ),
-                            ),
-                            const Text(
-                              'Summer Sale',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const Text(
-                              'Up to 50% off on vibrant collections',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomLeft,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.black87,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 18,
-                                    vertical: 8,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                ),
-                                onPressed: () {},
-                                child: const Text('Shop Now'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Flash sale header
+                      // Flash Sale Header
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.flash_on, color: AppColors.primaryRed, size: 18),
+                              const Icon(Icons.flash_on, color: AppColors.primaryRed, size: 20),
                               const SizedBox(width: 6),
                               const Text(
                                 'Flash Sale',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.textPrimary,
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 12),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(color: Colors.purple.shade100),
                                 ),
                                 child: Row(
-                                  children: const [
-                                    Icon(Icons.timer_outlined, size: 14, color: Colors.deepPurple),
-                                    SizedBox(width: 4),
+                                  children: [
+                                    Icon(Icons.timer_outlined, size: 14, color: Colors.deepPurple.shade700),
+                                    const SizedBox(width: 4),
                                     Text(
-                                      '02:14:59',
+                                      _formatTimer(),
                                       style: TextStyle(
-                                        fontSize: 11,
-                                        color: Colors.deepPurple,
+                                        fontSize: 12,
+                                        color: Colors.deepPurple.shade700,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -494,7 +558,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             child: const Text(
                               'See All',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 14,
                                 color: AppColors.primaryRed,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -503,28 +567,26 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         ],
                       ),
                       const SizedBox(height: 12),
+                      // Flash Sale Products
                       SizedBox(
-                        height: 230,
+                        height: 240,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: products.length.clamp(0, 5),
                           separatorBuilder: (_, __) => const SizedBox(width: 12),
                           itemBuilder: (context, index) {
                             final product = products[index];
-                            return SizedBox(
-                              width: 160,
-                              child: ProductCard(
-                                product: product,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ProductDetailScreen(productId: product.id),
-                                    ),
-                                  );
-                                },
-                              ),
+                            return FlashSaleCard(
+                              product: product,
+                              soldPercentage: flashSalePercentages[index % flashSalePercentages.length],
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProductDetailScreen(productId: product.id),
+                                  ),
+                                );
+                              },
                             );
                           },
                         ),
@@ -534,13 +596,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
               ),
 
-              // Just for you title
+              // Just for You Section
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Row(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Text(
                         'Just for You',
                         style: TextStyle(
@@ -554,13 +616,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
               ),
 
-              // Product grid
+              // Product Grid
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 sliver: SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.68,
+                    childAspectRatio: 0.58,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 16,
                   ),
@@ -570,14 +632,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         return const Center(child: CircularProgressIndicator());
                       }
                       final product = products[index];
-                      return ProductCard(
+                      return ProductCardEnhanced(
                         product: product,
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  ProductDetailScreen(productId: product.id),
+                              builder: (context) => ProductDetailScreen(productId: product.id),
                             ),
                           );
                         },
@@ -595,35 +656,92 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Widget _buildBottomNavigation() {
-    int selectedIndex = 0; // Home is selected
-    return BottomNavigationBar(
-      currentIndex: selectedIndex,
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.primaryRed,
-      unselectedItemColor: AppColors.textGrey,
-      selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-      unselectedLabelStyle: const TextStyle(fontSize: 12),
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
+    int selectedIndex = 0;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Container(
+          height: 65,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(Icons.home, 'Home', 0, selectedIndex == 0),
+              _buildNavItem(Icons.grid_view_outlined, 'Categories', 1, selectedIndex == 1),
+              // Central purple shopping bag
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade600,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.purple.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.shopping_bag_outlined,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              _buildNavItem(Icons.favorite_border, 'Saved', 2, selectedIndex == 2),
+              _buildNavItem(Icons.person_outline, 'Account', 3, selectedIndex == 3),
+            ],
+          ),
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart_outlined),
-          label: 'Cart',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          label: 'Profile',
-        ),
-      ],
-      onTap: (index) {
-        // TODO: Navigate to different screens
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, int index, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          // Handle navigation
+        });
       },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
+            size: 24,
+          ),
+          const SizedBox(height: 4),
+          Container(
+            height: 2,
+            width: 20,
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.primaryRed : Colors.transparent,
+              borderRadius: BorderRadius.circular(1),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -620,9 +620,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.58,
+                    // Responsive aspect ratio based on screen width
+                    childAspectRatio: () {
+                      final width = MediaQuery.of(context).size.width;
+                      if (width < 380) return 0.50;
+                      if (width < 410) return 0.52;
+                      return 0.58;
+                    }(),
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 16,
                   ),

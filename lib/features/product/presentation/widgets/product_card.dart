@@ -186,32 +186,33 @@ class _ProductCardState extends State<ProductCard> {
                     ],
                   ),
                 ),
-              // Add to Cart Button (Red Circle with +)
-              GestureDetector(
-                onTap: () {
-                  // TODO: Add to cart functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${widget.product.name} added to cart'),
-                      duration: const Duration(seconds: 1),
+                // Add to Cart Button (Red Circle with +)
+                GestureDetector(
+                  onTap: () {
+                    // TODO: Add to cart functionality
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${widget.product.name} added to cart'),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primaryRed,
+                      shape: BoxShape.circle,
                     ),
-                  );
-                },
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primaryRed,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 20,
+                    child: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

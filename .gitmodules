@@ -1,0 +1,3 @@
+[submodule "json_mock_server"]
+	path = json_mock_server
+	url = https://github.com/biswajeet162/json_mock_server.git

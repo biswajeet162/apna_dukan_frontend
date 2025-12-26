@@ -47,45 +47,44 @@ class FlashSaleCard extends StatelessWidget {
                       width: double.infinity,
                       height: double.infinity,
                       color: AppColors.backgroundGrey,
-                    child: product.imageUrl.isNotEmpty
-                        ? Image.network(
-                            product.imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: AppColors.backgroundGrey,
-                                child: const Icon(Icons.image_not_supported, size: 40),
-                              );
-                            },
-                          )
-                        : Container(
-                            color: AppColors.backgroundGrey,
-                            child: const Icon(Icons.image, size: 40),
-                          ),
-                  ),
-                ),
-                // Discount Badge
-                if (product.discountPercentage > 0)
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryRed,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '-${product.discountPercentage.toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      ),
+                      child: product.imageUrl.isNotEmpty
+                          ? Image.network(
+                              product.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: AppColors.backgroundGrey,
+                                  child: const Icon(Icons.image_not_supported, size: 40),
+                                );
+                              },
+                            )
+                          : Container(
+                              color: AppColors.backgroundGrey,
+                              child: const Icon(Icons.image, size: 40),
+                            ),
                     ),
                   ),
+                  // Discount Badge
+                  if (product.discountPercentage > 0)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryRed,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '-${product.discountPercentage.toStringAsFixed(0)}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

@@ -112,7 +112,7 @@ class _ProductCardEnhancedState extends State<ProductCardEnhanced> {
             ),
             // Product Info
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width < 410 ? 10 : 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -120,19 +120,19 @@ class _ProductCardEnhancedState extends State<ProductCardEnhanced> {
                   // Brand Name (Red)
                   Text(
                     _brandName,
-                    style: const TextStyle(
-                      fontSize: 11,
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width < 410 ? 10 : 11,
                       fontWeight: FontWeight.w600,
                       color: AppColors.primaryRed,
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: MediaQuery.of(context).size.width < 410 ? 3 : 4),
                   // Product Name
                   Text(
                     widget.product.name,
-                    style: const TextStyle(
-                      fontSize: 13,
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width < 410 ? 12 : 13,
                       fontWeight: FontWeight.w500,
                       color: AppColors.textPrimary,
                       height: 1.3,
@@ -140,7 +140,7 @@ class _ProductCardEnhancedState extends State<ProductCardEnhanced> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: MediaQuery.of(context).size.width < 410 ? 4 : 6),
                   // Rating and Reviews
                   Row(
                     children: [
@@ -150,17 +150,17 @@ class _ProductCardEnhancedState extends State<ProductCardEnhanced> {
                             index < widget.product.rating.floor()
                                 ? Icons.star
                                 : Icons.star_border,
-                            size: 12,
+                            size: MediaQuery.of(context).size.width < 410 ? 11 : 12,
                             color: Colors.amber,
                           );
                         }),
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: MediaQuery.of(context).size.width < 410 ? 3 : 4),
                       Flexible(
                         child: Text(
                           '${widget.product.rating.toStringAsFixed(1)} (${_reviewCount})',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: MediaQuery.of(context).size.width < 410 ? 10 : 11,
                             color: AppColors.textGrey,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -168,7 +168,7 @@ class _ProductCardEnhancedState extends State<ProductCardEnhanced> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: MediaQuery.of(context).size.width < 410 ? 6 : 8),
                   // Price and Add Button Row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -183,8 +183,8 @@ class _ProductCardEnhancedState extends State<ProductCardEnhanced> {
                             // Current Price
                             Text(
                               '₹${widget.product.price.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 16,
+                              style: TextStyle(
+                                fontSize: MediaQuery.of(context).size.width < 410 ? 14 : 16,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
                               ),
@@ -194,7 +194,7 @@ class _ProductCardEnhancedState extends State<ProductCardEnhanced> {
                               Text(
                                 '₹${widget.product.mrp.toStringAsFixed(2)}',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: MediaQuery.of(context).size.width < 410 ? 11 : 12,
                                   decoration: TextDecoration.lineThrough,
                                   color: AppColors.textGrey,
                                 ),
@@ -213,16 +213,16 @@ class _ProductCardEnhancedState extends State<ProductCardEnhanced> {
                           );
                         },
                         child: Container(
-                          width: 36,
-                          height: 36,
+                          width: MediaQuery.of(context).size.width < 410 ? 32 : 36,
+                          height: MediaQuery.of(context).size.width < 410 ? 32 : 36,
                           decoration: const BoxDecoration(
                             color: AppColors.primaryRed,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.add,
                             color: Colors.white,
-                            size: 20,
+                            size: MediaQuery.of(context).size.width < 410 ? 18 : 20,
                           ),
                         ),
                       ),

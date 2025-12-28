@@ -9,6 +9,9 @@ import 'category_screen.dart';
 import 'order_screen.dart';
 import 'account_screen.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/navigation/app_navigator.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/widgets/bottom_navigation_bar.dart';
 
 /// Helper class for pinned search bar
 class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
@@ -47,7 +50,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   int _selectedCategoryIndex = 0;
-  int _selectedBottomNavIndex = 0;
   final List<Map<String, dynamic>> _categories = [
     {'name': 'Fashion', 'icon': Icons.checkroom, 'color': AppColors.primaryRed},
     {'name': 'Tech', 'icon': Icons.devices_other, 'color': Colors.purple},
@@ -126,11 +128,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: _selectedBottomNavIndex == 0
-            ? _buildHomeScreenWithScrollableHeader()
-            : _getScreenForIndex(_selectedBottomNavIndex),
+        child: _buildHomeScreenWithScrollableHeader(),
       ),
-      bottomNavigationBar: _buildBottomNavigation(),
+      bottomNavigationBar: const AppBottomNavigationBar(),
     );
   }
 
@@ -288,12 +288,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       return ProductCardEnhanced(
                         product: product,
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductDetailScreen(productId: product.id),
-                            ),
-                          );
+                          AppNavigator.toProductDetail(context, product.id);
                         },
                       );
                     },
@@ -449,12 +444,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   return ProductCardEnhanced(
                     product: product,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductDetailScreen(productId: product.id),
-                        ),
-                      );
+                      AppNavigator.toProductDetail(context, product.id);
                     },
                   );
                 },
@@ -467,19 +457,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
 
-  Widget _getScreenForIndex(int index) {
-    switch (index) {
-      case 1:
-        return const CategoryScreen();
-      case 2:
-        return const OrderScreen();
-      case 3:
-        return const AccountScreen();
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
   Widget _buildHeader() {
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -488,21 +465,26 @@ class _ProductListScreenState extends State<ProductListScreen> {
       ),
       child: Row(
         children: [
-          // Avatar with "B"
-          Container(
-            height: 40,
-            width: 40,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.primaryRed,
-            ),
-            child: const Center(
-              child: Text(
-                'B',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          // Avatar with "B" - Clickable to navigate to Account
+          GestureDetector(
+            onTap: () {
+              AppNavigator.toAccount(context);
+            },
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primaryRed,
+              ),
+              child: const Center(
+                child: Text(
+                  'B',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -944,12 +926,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 product: product,
                 soldPercentage: flashSalePercentages[index % flashSalePercentages.length],
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProductDetailScreen(productId: product.id),
-                    ),
-                  );
+                  AppNavigator.toProductDetail(context, product.id);
                 },
               );
             },
@@ -1331,12 +1308,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               product: product,
                               soldPercentage: flashSalePercentages[index % flashSalePercentages.length],
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ProductDetailScreen(productId: product.id),
-                                  ),
-                                );
+                                AppNavigator.toProductDetail(context, product.id);
                               },
                             );
                           },
@@ -1392,12 +1364,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       return ProductCardEnhanced(
                         product: product,
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductDetailScreen(productId: product.id),
-                            ),
-                          );
+                          AppNavigator.toProductDetail(context, product.id);
                         },
                       );
                     },
@@ -1412,80 +1379,4 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  Widget _buildBottomNavigation() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Container(
-          height: 65,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.home, 'Home', 0, _selectedBottomNavIndex == 0),
-              _buildNavItem(Icons.category_outlined, 'Category', 1, _selectedBottomNavIndex == 1),
-              _buildNavItem(Icons.shopping_bag_outlined, 'Order', 2, _selectedBottomNavIndex == 2),
-              _buildNavItem(Icons.person_outline, 'Account', 3, _selectedBottomNavIndex == 3),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index, bool isSelected) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedBottomNavIndex = index;
-          });
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
-              size: screenWidth < 290 ? 20 : 24,
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 2,
-              width: 20,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryRed : Colors.transparent,
-                borderRadius: BorderRadius.circular(1),
-              ),
-            ),
-            const SizedBox(height: 2),
-            Flexible(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: screenWidth < 290 ? 9 : 11,
-                  color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/navigation/app_navigator.dart';
+import '../../../../core/widgets/bottom_navigation_bar.dart';
 import '../providers/category_provider.dart';
 import '../providers/product_provider.dart';
 import '../../data/models/category_model.dart';
@@ -88,6 +90,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: const AppBottomNavigationBar(),
     );
   }
 
@@ -366,12 +369,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   return ProductCardEnhanced(
                     product: product,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductDetailScreen(productId: product.id),
-                        ),
-                      );
+                      AppNavigator.toProductDetail(context, product.id);
                     },
                   );
                 },

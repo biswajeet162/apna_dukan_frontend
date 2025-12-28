@@ -1,0 +1,166 @@
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/network_exceptions.dart';
+import '../../../../core/constants/api_endpoints.dart';
+import '../models/user_model.dart';
+
+/// Remote data source for authentication operations
+class AuthRemoteSource {
+  final ApiClient _apiClient;
+
+  AuthRemoteSource(this._apiClient);
+
+  /// Login - Send OTP to mobile number
+  Future<LoginResponse> login(String mobileNumber) async {
+    try {
+      final response = await _apiClient.post<Map<String, dynamic>>(
+        ApiEndpoints.login,
+        data: {
+          'mobileNumber': mobileNumber,
+        },
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+      if (!response.success || response.data == null) {
+        throw NetworkException(response.message);
+      }
+
+      return LoginResponse.fromJson(response.data!);
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw NetworkException('Failed to send OTP: ${e.toString()}');
+    }
+  }
+
+  /// Signup - Send OTP to mobile number for registration
+  Future<LoginResponse> signup(String mobileNumber, {String? name, String? email}) async {
+    try {
+      final response = await _apiClient.post<Map<String, dynamic>>(
+        ApiEndpoints.signup,
+        data: {
+          'mobileNumber': mobileNumber,
+          if (name != null) 'name': name,
+          if (email != null) 'email': email,
+        },
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+      if (!response.success || response.data == null) {
+        throw NetworkException(response.message);
+      }
+
+      return LoginResponse.fromJson(response.data!);
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw NetworkException('Failed to send OTP for registration: ${e.toString()}');
+    }
+  }
+
+  /// Verify OTP and get tokens
+  Future<VerifyOtpResponse> verifyOtp(String otpRefId, String otp) async {
+    try {
+      final response = await _apiClient.post<Map<String, dynamic>>(
+        ApiEndpoints.verifyOtp,
+        data: {
+          'otpRefId': otpRefId,
+          'otp': otp,
+        },
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+      if (!response.success || response.data == null) {
+        throw NetworkException(response.message);
+      }
+
+      return VerifyOtpResponse.fromJson(response.data!);
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw NetworkException('Failed to verify OTP: ${e.toString()}');
+    }
+  }
+
+  /// Refresh access token
+  Future<VerifyOtpResponse> refreshToken(String refreshToken) async {
+    try {
+      final response = await _apiClient.post<Map<String, dynamic>>(
+        ApiEndpoints.refreshToken,
+        data: {
+          'refreshToken': refreshToken,
+        },
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+      if (!response.success || response.data == null) {
+        throw NetworkException(response.message);
+      }
+
+      return VerifyOtpResponse.fromJson(response.data!);
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw NetworkException('Failed to refresh token: ${e.toString()}');
+    }
+  }
+
+  /// Logout
+  Future<void> logout() async {
+    try {
+      final response = await _apiClient.post<dynamic>(
+        ApiEndpoints.logout,
+        fromJson: (data) => data,
+      );
+
+      if (!response.success) {
+        throw NetworkException(response.message);
+      }
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw NetworkException('Failed to logout: ${e.toString()}');
+    }
+  }
+
+  /// Get current user profile
+  Future<UserModel> getMe() async {
+    try {
+      final response = await _apiClient.get<Map<String, dynamic>>(
+        ApiEndpoints.me,
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+      if (!response.success || response.data == null) {
+        throw NetworkException(response.message);
+      }
+
+      return UserModel.fromJson(response.data!);
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw NetworkException('Failed to fetch user profile: ${e.toString()}');
+    }
+  }
+
+  /// Update user profile
+  Future<UserModel> updateProfile({
+    String? name,
+    String? email,
+  }) async {
+    try {
+      final data = <String, dynamic>{};
+      if (name != null) data['name'] = name;
+      if (email != null) data['email'] = email;
+
+      final response = await _apiClient.put<Map<String, dynamic>>(
+        ApiEndpoints.updateProfile,
+        data: data,
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+      if (!response.success || response.data == null) {
+        throw NetworkException(response.message);
+      }
+
+      return UserModel.fromJson(response.data!);
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw NetworkException('Failed to update profile: ${e.toString()}');
+    }
+  }
+}
+

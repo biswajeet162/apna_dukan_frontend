@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/navigation/app_navigator.dart';
+import '../../../../core/routes/app_routes.dart';
 
 /// Account screen sample page
 class AccountScreen extends StatelessWidget {
@@ -164,10 +166,11 @@ class AccountScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Logout functionality will be implemented'),
-                      ),
+                    // Navigate to login screen and clear navigation stack
+                    AppNavigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.login,
+                      predicate: (route) => false,
                     );
                   },
                   style: ElevatedButton.styleFrom(

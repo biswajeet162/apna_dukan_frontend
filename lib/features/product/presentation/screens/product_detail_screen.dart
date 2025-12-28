@@ -5,6 +5,9 @@ import 'category_screen.dart';
 import 'order_screen.dart';
 import 'account_screen.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/navigation/app_navigator.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/widgets/bottom_navigation_bar.dart';
 
 /// Product detail screen
 class ProductDetailScreen extends StatefulWidget {
@@ -21,7 +24,6 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _selectedImageIndex = 0;
-  int _selectedBottomNavIndex = 0;
 
   @override
   void initState() {
@@ -33,14 +35,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // If bottom nav is selected, show that screen
-    if (_selectedBottomNavIndex != 0) {
-      return Scaffold(
-        body: _getScreenForIndex(_selectedBottomNavIndex),
-        bottomNavigationBar: _buildBottomNavigation(),
-      );
-    }
-
     return Scaffold(
       body: Consumer<ProductProvider>(
         builder: (context, provider, child) {
@@ -334,102 +328,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           );
         },
       ),
-      bottomNavigationBar: _buildBottomNavigation(),
+      bottomNavigationBar: const AppBottomNavigationBar(),
     );
   }
 
-  Widget _getScreenForIndex(int index) {
-    switch (index) {
-      case 1:
-        return const CategoryScreen();
-      case 2:
-        return const OrderScreen();
-      case 3:
-        return const AccountScreen();
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildBottomNavigation() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Container(
-          height: 65,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.home, 'Home', 0, _selectedBottomNavIndex == 0),
-              _buildNavItem(Icons.category_outlined, 'Category', 1, _selectedBottomNavIndex == 1),
-              _buildNavItem(Icons.shopping_bag_outlined, 'Order', 2, _selectedBottomNavIndex == 2),
-              _buildNavItem(Icons.person_outline, 'Account', 3, _selectedBottomNavIndex == 3),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index, bool isSelected) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedBottomNavIndex = index;
-            // If Home is selected, navigate back to product list
-            if (index == 0) {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            }
-          });
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
-              size: screenWidth < 290 ? 20 : 24,
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 2,
-              width: 20,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryRed : Colors.transparent,
-                borderRadius: BorderRadius.circular(1),
-              ),
-            ),
-            const SizedBox(height: 2),
-            Flexible(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: screenWidth < 290 ? 9 : 11,
-                  color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 

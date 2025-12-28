@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/bottom_navigation_bar.dart';
 
 /// Order screen sample page
 class OrderScreen extends StatelessWidget {

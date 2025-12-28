@@ -16,5 +16,15 @@ class ApiEndpoints {
   static String categoryById(int id) => '/api/v1/categories/$id';
   static String categoryBySlug(String slug) => '/api/v1/categories/slug/$slug';
   static String categoryChildren(int categoryId) => '/api/v1/categories/$categoryId/children';
+
+  // Auth endpoints
+  static const String auth = '/api/v1/auth';
+  static const String login = '/api/v1/auth/login';
+  static const String signup = '/api/v1/auth/signup';
+  static const String verifyOtp = '/api/v1/auth/verify-otp';
+  static const String refreshToken = '/api/v1/auth/refresh-token';
+  static const String logout = '/api/v1/auth/logout';
+  static const String me = '/api/v1/auth/me';
+  static const String updateProfile = '/api/v1/auth/profile';
 }
 

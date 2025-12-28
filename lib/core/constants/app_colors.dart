@@ -18,5 +18,24 @@ class AppColors {
   // Accent colors
   static const Color discountYellow = Color(0xFFFFC107);
   static const Color newBadgeBlue = Color(0xFF2196F3);
+  
+  // Gradient colors for auth screens
+  static const Color gradientPurple = Color(0xFF9C27B0);
+  static const Color gradientPink = Color(0xFFE91E63);
+  static const Color gradientLightPurple = Color(0xFFBA68C8);
+  static const Color gradientLightPink = Color(0xFFF06292);
+  
+  // Gradient
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [gradientPurple, gradientPink],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+  static const LinearGradient lightGradient = LinearGradient(
+    colors: [Color(0xFFF3E5F5), Colors.white],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
 }
 

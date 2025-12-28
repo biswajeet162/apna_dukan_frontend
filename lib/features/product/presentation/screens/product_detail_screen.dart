@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
+import 'category_screen.dart';
+import 'order_screen.dart';
+import 'account_screen.dart';
+import '../../../../core/constants/app_colors.dart';
 
 /// Product detail screen
 class ProductDetailScreen extends StatefulWidget {
@@ -17,6 +21,7 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _selectedImageIndex = 0;
+  int _selectedBottomNavIndex = 0;
 
   @override
   void initState() {
@@ -28,6 +33,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // If bottom nav is selected, show that screen
+    if (_selectedBottomNavIndex != 0) {
+      return Scaffold(
+        body: _getScreenForIndex(_selectedBottomNavIndex),
+        bottomNavigationBar: _buildBottomNavigation(),
+      );
+    }
+
     return Scaffold(
       body: Consumer<ProductProvider>(
         builder: (context, provider, child) {
@@ -112,7 +125,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               // Product Details
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(
+                    MediaQuery.of(context).size.width < 290 ? 12 : 16,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -161,61 +176,70 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       // Product Name
                       Text(
                         product.name,
-                        style: const TextStyle(
-                          fontSize: 24,
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width < 290 ? 18 : 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
                       // Rating and Reviews
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Icon(Icons.star, color: Colors.amber[700], size: 20),
-                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.star,
+                            color: Colors.amber[700],
+                            size: MediaQuery.of(context).size.width < 290 ? 16 : 20,
+                          ),
+                          SizedBox(width: MediaQuery.of(context).size.width < 290 ? 3 : 4),
                           Text(
                             product.rating.toStringAsFixed(1),
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '(${product.reviewsCount.toString()} reviews)',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
+                          SizedBox(width: MediaQuery.of(context).size.width < 290 ? 6 : 8),
+                          Flexible(
+                            child: Text(
+                              '(${product.reviewsCount.toString()} reviews)',
+                              style: TextStyle(
+                                fontSize: MediaQuery.of(context).size.width < 290 ? 12 : 14,
+                                color: Colors.grey[600],
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       // Price
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(
                             '₹${product.price.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 28,
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width < 290 ? 20 : 28,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
                             ),
                           ),
                           if (product.mrp > product.price) ...[
-                            const SizedBox(width: 12),
+                            SizedBox(width: MediaQuery.of(context).size.width < 290 ? 8 : 12),
                             Text(
                               '₹${product.mrp.toStringAsFixed(2)}',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 18,
                                 decoration: TextDecoration.lineThrough,
                                 color: Colors.grey[600],
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: MediaQuery.of(context).size.width < 290 ? 6 : 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: MediaQuery.of(context).size.width < 290 ? 6 : 8,
+                                vertical: MediaQuery.of(context).size.width < 290 ? 3 : 4,
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.red,
@@ -223,9 +247,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               ),
                               child: Text(
                                 '${product.discountPercentage.toStringAsFixed(0)}% OFF',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 12,
+                                  fontSize: MediaQuery.of(context).size.width < 290 ? 10 : 12,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -235,41 +259,50 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                       const SizedBox(height: 24),
                       // Stock Status
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Icon(
                             product.stock > 0 ? Icons.check_circle : Icons.cancel,
                             color: product.stock > 0 ? Colors.green : Colors.red,
+                            size: MediaQuery.of(context).size.width < 290 ? 18 : 24,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            product.stock > 0
-                                ? 'In Stock (${product.stock} available)'
-                                : 'Out of Stock',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: product.stock > 0 ? Colors.green : Colors.red,
-                              fontWeight: FontWeight.w500,
+                          SizedBox(width: MediaQuery.of(context).size.width < 290 ? 6 : 8),
+                          Flexible(
+                            child: Text(
+                              product.stock > 0
+                                  ? 'In Stock (${product.stock} available)'
+                                  : 'Out of Stock',
+                              style: TextStyle(
+                                fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
+                                color: product.stock > 0 ? Colors.green : Colors.red,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 24),
                       // Category
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             'Category: ',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          Text(
-                            product.categoryName,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.blue[700],
+                          Flexible(
+                            child: Text(
+                              product.categoryName,
+                              style: TextStyle(
+                                fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
+                                color: Colors.blue[700],
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -301,68 +334,100 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           );
         },
       ),
-      bottomNavigationBar: Consumer<ProductProvider>(
-        builder: (context, provider, child) {
-          final product = provider.productDetail;
-          if (product == null) return const SizedBox.shrink();
+      bottomNavigationBar: _buildBottomNavigation(),
+    );
+  }
 
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withValues(alpha: 0.3),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: product.stock > 0
-                        ? () {
-                            // Add to cart functionality
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Added to cart'),
-                              ),
-                            );
-                          }
-                        : null,
-                    icon: const Icon(Icons.shopping_cart),
-                    label: const Text('Add to Cart'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: product.stock > 0
-                        ? () {
-                            // Buy now functionality
-                          }
-                        : null,
-                    icon: const Icon(Icons.flash_on),
-                    label: const Text('Buy Now'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
+  Widget _getScreenForIndex(int index) {
+    switch (index) {
+      case 1:
+        return const CategoryScreen();
+      case 2:
+        return const OrderScreen();
+      case 3:
+        return const AccountScreen();
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildBottomNavigation() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Container(
+          height: 65,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(Icons.home, 'Home', 0, _selectedBottomNavIndex == 0),
+              _buildNavItem(Icons.category_outlined, 'Category', 1, _selectedBottomNavIndex == 1),
+              _buildNavItem(Icons.shopping_bag_outlined, 'Order', 2, _selectedBottomNavIndex == 2),
+              _buildNavItem(Icons.person_outline, 'Account', 3, _selectedBottomNavIndex == 3),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, int index, bool isSelected) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedBottomNavIndex = index;
+            // If Home is selected, navigate back to product list
+            if (index == 0) {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            }
+          });
         },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
+              size: screenWidth < 290 ? 20 : 24,
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 2,
+              width: 20,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primaryRed : Colors.transparent,
+                borderRadius: BorderRadius.circular(1),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: screenWidth < 290 ? 9 : 11,
+                  color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

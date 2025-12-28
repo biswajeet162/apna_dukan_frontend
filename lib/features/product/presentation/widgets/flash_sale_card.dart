@@ -17,10 +17,17 @@ class FlashSaleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Make width responsive: use 160 for larger screens, but ensure it fits on small screens
+    final double cardWidth = screenWidth < 290 
+        ? screenWidth * 0.85  // Use 85% of screen width for very small screens
+        : (screenWidth < 360 ? screenWidth * 0.5 : 160.0);
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 160,
+        width: cardWidth,
+        constraints: const BoxConstraints(maxWidth: 160),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),

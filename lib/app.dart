@@ -8,10 +8,12 @@ import 'features/product/data/sources/category_remote_source.dart';
 import 'features/product/data/repositories/category_repository.dart';
 import 'features/product/presentation/providers/product_provider.dart';
 import 'features/product/presentation/providers/category_provider.dart';
-import 'features/product/presentation/screens/product_list_screen.dart';
 import 'features/auth/data/sources/auth_remote_source.dart';
 import 'features/auth/data/repositories/auth_repository.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
+import 'features/order/data/sources/order_remote_source.dart';
+import 'features/order/data/repositories/order_repository.dart';
+import 'features/order/presentation/providers/order_provider.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -36,11 +38,17 @@ class MyApp extends StatelessWidget {
     final authRepository = AuthRepository(authRemoteSource);
     final authProvider = AuthProvider(authRepository, apiClient);
 
+    // Initialize order dependencies
+    final orderRemoteSource = OrderRemoteSource(apiClient);
+    final orderRepository = OrderRepository(orderRemoteSource);
+    final orderProvider = OrderProvider(orderRepository);
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: productProvider),
         ChangeNotifierProvider.value(value: categoryProvider),
         ChangeNotifierProvider.value(value: authProvider),
+        ChangeNotifierProvider.value(value: orderProvider),
       ],
       child: MaterialApp(
         title: 'Apna Dukan',

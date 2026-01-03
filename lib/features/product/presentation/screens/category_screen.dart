@@ -227,10 +227,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
         ),
         child: Row(
           children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(

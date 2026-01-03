@@ -6,7 +6,6 @@ import '../widgets/flash_sale_card.dart';
 import '../widgets/product_card_enhanced.dart';
 import 'product_detail_screen.dart';
 import 'category_screen.dart';
-import 'order_screen.dart';
 import 'account_screen.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/navigation/app_navigator.dart';

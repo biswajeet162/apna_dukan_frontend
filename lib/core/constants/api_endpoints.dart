@@ -26,5 +26,13 @@ class ApiEndpoints {
   static const String logout = '/api/v1/auth/logout';
   static const String me = '/api/v1/auth/me';
   static const String updateProfile = '/api/v1/auth/profile';
+
+  // Order endpoints
+  static const String orders = '/api/v1/orders';
+  static String orderById(int orderId) => '/api/v1/orders/$orderId';
+  static String orderStatus(int orderId) => '/api/v1/orders/$orderId/status';
+  static String orderInvoice(int orderId) => '/api/v1/orders/$orderId/invoice';
+  static String cancelOrder(int orderId) => '/api/v1/orders/$orderId/cancel';
+  static String returnOrder(int orderId) => '/api/v1/orders/$orderId/return';
 }
 

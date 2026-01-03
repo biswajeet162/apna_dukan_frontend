@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
 import 'category_screen.dart';
-import 'order_screen.dart';
 import 'account_screen.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/navigation/app_navigator.dart';
@@ -46,7 +45,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
           if (provider.error != null && provider.productDetail == null) {
             return Scaffold(
-              appBar: AppBar(),
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+              ),
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -80,6 +81,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SliverAppBar(
                 expandedHeight: 300,
                 pinned: true,
+                automaticallyImplyLeading: false,
                 flexibleSpace: FlexibleSpaceBar(
                   background: product.imageUrls.isNotEmpty
                       ? PageView.builder(

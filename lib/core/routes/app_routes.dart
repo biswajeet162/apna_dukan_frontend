@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../features/auth/auth_routes.dart';
 import '../../features/product/product_routes.dart';
 import '../../features/product/presentation/screens/category_screen.dart';
-import '../../features/product/presentation/screens/order_screen.dart';
+import '../../features/order/order_routes.dart';
 import '../../features/product/presentation/screens/account_screen.dart';
 
 /// Centralized app routing configuration
@@ -75,9 +75,8 @@ class AppRoutes {
           builder: (_) => const CategoryScreen(),
         );
       case orders:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const OrderScreen(),
+        return OrderRoutes.generateRoute(
+          RouteSettings(name: OrderRoutes.orders),
         );
       case account:
         return MaterialPageRoute(
@@ -114,7 +113,10 @@ class AppRoutes {
     return MaterialPageRoute(
       settings: settings,
       builder: (_) => Scaffold(
-        appBar: AppBar(title: const Text('Page Not Found')),
+        appBar: AppBar(
+          title: const Text('Page Not Found'),
+          automaticallyImplyLeading: false,
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

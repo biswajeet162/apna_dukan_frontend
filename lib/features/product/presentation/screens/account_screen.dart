@@ -21,6 +21,7 @@ class AccountScreen extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
+        automaticallyImplyLeading: false,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       body: SafeArea(

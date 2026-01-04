@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../data/models/user_model.dart';
 import '../../../../core/network/network_exceptions.dart';
@@ -9,7 +10,33 @@ class AuthProvider extends ChangeNotifier {
   final AuthRepository _repository;
   final ApiClient _apiClient;
 
-  AuthProvider(this._repository, this._apiClient);
+  AuthProvider(this._repository, this._apiClient) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final prefs = await SharedPreferences.getInstance();
+    _accessToken = prefs.getString('access_token');
+    _refreshToken = prefs.getString('refresh_token');
+    if (_accessToken != null) {
+      _isAuthenticated = true;
+      // Fetch user profile if token exists
+      await getMe();
+    }
+    notifyListeners();
+  }
+
+  Future<void> _saveTokens(String access, String refresh) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', access);
+    await prefs.setString('refresh_token', refresh);
+  }
+
+  Future<void> _clearTokens() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access_token');
+    await prefs.remove('refresh_token');
+  }
 
   // State variables
   bool _isLoading = false;
@@ -50,15 +77,37 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Signup - Send OTP to mobile number for registration
-  Future<bool> signup(String mobileNumber, {String? name, String? email}) async {
+  /// Signup - Register and login
+  Future<bool> signup(
+    String mobileNumber,
+    String firstName,
+    String password, {
+    String? lastName,
+    String? email,
+  }) async {
     try {
       _isLoading = true;
       _error = null;
       notifyListeners();
 
-      final response = await _repository.signup(mobileNumber, name: name, email: email);
-      _otpRefId = response.otpRefId;
+      final response = await _repository.signup(
+        mobileNumber,
+        firstName,
+        password,
+        lastName: lastName,
+        email: email,
+      );
+
+      _accessToken = response.accessToken;
+      _refreshToken = response.refreshToken;
+      _isAuthenticated = true;
+
+      // Persist tokens
+      await _saveTokens(_accessToken!, _refreshToken!);
+
+      // Fetch user profile
+      await getMe();
+
       _error = null;
       return true;
     } on NetworkException catch (e) {
@@ -90,8 +139,8 @@ class AuthProvider extends ChangeNotifier {
       _refreshToken = response.refreshToken;
       _isAuthenticated = true;
 
-      // Set auth token in API client
-      _apiClient.setAuthToken(_accessToken!);
+      // Persist tokens
+      await _saveTokens(_accessToken!, _refreshToken!);
 
       // Fetch user profile
       await getMe();
@@ -147,8 +196,8 @@ class AuthProvider extends ChangeNotifier {
       _otpRefId = null;
       _isAuthenticated = false;
 
-      // Remove auth token from API client
-      _apiClient.removeAuthToken();
+      // Clear persisted tokens
+      await _clearTokens();
 
       _error = null;
     } on NetworkException catch (e) {

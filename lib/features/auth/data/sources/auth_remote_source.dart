@@ -31,14 +31,22 @@ class AuthRemoteSource {
     }
   }
 
-  /// Signup - Send OTP to mobile number for registration
-  Future<LoginResponse> signup(String mobileNumber, {String? name, String? email}) async {
+  /// Signup - Register user and get tokens
+  Future<VerifyOtpResponse> signup(
+    String mobileNumber,
+    String firstName,
+    String password, {
+    String? lastName,
+    String? email,
+  }) async {
     try {
       final response = await _apiClient.post<Map<String, dynamic>>(
         ApiEndpoints.signup,
         data: {
           'mobileNumber': mobileNumber,
-          if (name != null) 'name': name,
+          'firstName': firstName,
+          'password': password,
+          if (lastName != null) 'lastName': lastName,
           if (email != null) 'email': email,
         },
         fromJson: (data) => data as Map<String, dynamic>,
@@ -48,10 +56,10 @@ class AuthRemoteSource {
         throw NetworkException(response.message);
       }
 
-      return LoginResponse.fromJson(response.data!);
+      return VerifyOtpResponse.fromJson(response.data!);
     } catch (e) {
       if (e is NetworkException) rethrow;
-      throw NetworkException('Failed to send OTP for registration: ${e.toString()}');
+      throw NetworkException('Failed to register: ${e.toString()}');
     }
   }
 

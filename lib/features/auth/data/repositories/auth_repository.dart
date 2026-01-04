@@ -19,10 +19,22 @@ class AuthRepository {
     }
   }
 
-  /// Signup - Send OTP to mobile number for registration
-  Future<LoginResponse> signup(String mobileNumber, {String? name, String? email}) async {
+  /// Signup - Register user and get tokens
+  Future<VerifyOtpResponse> signup(
+    String mobileNumber,
+    String firstName,
+    String password, {
+    String? lastName,
+    String? email,
+  }) async {
     try {
-      return await _remoteSource.signup(mobileNumber, name: name, email: email);
+      return await _remoteSource.signup(
+        mobileNumber,
+        firstName,
+        password,
+        lastName: lastName,
+        email: email,
+      );
     } on NetworkException {
       rethrow;
     } catch (e) {

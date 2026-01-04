@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../constants/api_endpoints.dart';
 import 'api_response.dart';
 import 'network_exceptions.dart';
+import 'auth_interceptor.dart';
 
 /// API Client using Dio for HTTP requests
 class ApiClient {
@@ -24,6 +25,7 @@ class ApiClient {
     );
 
     // Add interceptors
+    _dio.interceptors.add(AuthInterceptor());
     _dio.interceptors.add(LogInterceptor(
       requestBody: true,
       responseBody: true,
@@ -31,15 +33,7 @@ class ApiClient {
     ));
   }
 
-  /// Add authentication token to headers
-  void setAuthToken(String token) {
-    _dio.options.headers['Authorization'] = 'Bearer $token';
-  }
-
-  /// Remove authentication token
-  void removeAuthToken() {
-    _dio.options.headers.remove('Authorization');
-  }
+  // Removed manual token management in favor of AuthInterceptor
 
   /// Handle API response and convert to ApiResponse
   Future<ApiResponse<T>> _handleResponse<T>(

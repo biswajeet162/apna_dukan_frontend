@@ -463,8 +463,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
   Widget _buildHeader() {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
-    final displayName = user?.firstName ?? 'User';
-    final initial = user?.initial ?? 'U';
+    final isAuthenticated = authProvider.isAuthenticated && user != null;
+    final displayName = user?.firstName ?? '';
+    final initial = user?.initial ?? '';
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -473,57 +474,78 @@ class _ProductListScreenState extends State<ProductListScreen> {
       ),
       child: Row(
         children: [
-          // Avatar with "B" - Clickable to navigate to Account
-          GestureDetector(
-            onTap: () {
-              AppNavigator.toAccount(context);
-            },
-            child: Container(
-              height: 40,
-              width: 40,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primaryRed,
-              ),
-              child: Center(
-                child: Text(
-                  initial,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+          if (isAuthenticated) ...[
+            // Avatar with Initial - Clickable to navigate to Account
+            GestureDetector(
+              onTap: () {
+                AppNavigator.toAccount(context);
+              },
+              child: Container(
+                height: 40,
+                width: 40,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primaryRed,
+                ),
+                child: Center(
+                  child: Text(
+                    initial,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          SizedBox(width: MediaQuery.of(context).size.width < 290 ? 8 : 12),
-          // Greeting and name
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Good Morning!',
-                  style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.width < 290 ? 10 : 12,
-                    color: AppColors.textGrey,
+            SizedBox(width: MediaQuery.of(context).size.width < 290 ? 8 : 12),
+            // Greeting and name
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Good Morning!',
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width < 290 ? 10 : 12,
+                      color: AppColors.textGrey,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  displayName,
-                  style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                  const SizedBox(height: 2),
+                  Text(
+                    displayName,
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ] else ...[
+            // Login button for guests
+            ElevatedButton(
+              onPressed: () => AppNavigator.toLogin(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryRed,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                minimumSize: const Size(80, 36),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Login',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            const Spacer(),
+          ],
           // Notification icon with purple dot
           Stack(
             clipBehavior: Clip.none,

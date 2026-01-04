@@ -66,7 +66,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProductProvider>().loadProducts(refresh: true);
+      if (ModalRoute.of(context)?.isCurrent ?? false) {
+        context.read<ProductProvider>().loadProducts(refresh: true);
+      }
     });
     _scrollController.addListener(_onScroll);
     _startTimer();

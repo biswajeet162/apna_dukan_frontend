@@ -11,6 +11,7 @@ class AppRoutes {
   static const String home = '/';
   static const String products = '/products';
   static const String productDetail = '/products/:id';
+  static const String splash = '/splash';
   
   // Auth routes
   static const String login = '/login';
@@ -53,6 +54,13 @@ class AppRoutes {
       }
       // Invalid product ID, return 404
       return _buildNotFoundRoute(settings);
+    }
+
+    // Handle splash route
+    if (path == splash) {
+      return AuthRoutes.generateRoute(
+        RouteSettings(name: AuthRoutes.splash),
+      );
     }
 
     // Handle auth routes

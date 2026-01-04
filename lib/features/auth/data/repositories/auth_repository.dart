@@ -8,10 +8,10 @@ class AuthRepository {
 
   AuthRepository(this._remoteSource);
 
-  /// Login - Send OTP to mobile number
-  Future<LoginResponse> login(String mobileNumber) async {
+  /// Login - Direct password login
+  Future<dynamic> login(String mobileNumber, String password) async {
     try {
-      return await _remoteSource.login(mobileNumber);
+      return await _remoteSource.login(mobileNumber, password);
     } on NetworkException {
       rethrow;
     } catch (e) {

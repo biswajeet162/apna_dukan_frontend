@@ -52,16 +52,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Account created successfully'),
+          content: Text('Account created successfully!'),
           backgroundColor: Colors.green,
+          duration: Duration(seconds: 1),
         ),
       );
-      // Navigate to home and clear navigation stack
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.home,
-        (route) => false,
-      );
+
+      // Wait for user to see the message
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (mounted) {
+        AppNavigator.toHomeClearStack(context);
+      }
     } else if (mounted && authProvider.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

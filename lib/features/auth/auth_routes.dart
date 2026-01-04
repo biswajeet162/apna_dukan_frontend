@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'presentation/screens/login_screen.dart';
 import 'presentation/screens/register_screen.dart';
 import 'presentation/screens/forgot_password_screen.dart';
+import 'presentation/screens/splash_screen.dart';
 
 /// Auth feature routes
 class AuthRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
+  static const String splash = '/splash';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -25,6 +27,11 @@ class AuthRoutes {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const ForgotPasswordScreen(),
+        );
+      case splash:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SplashScreen(),
         );
       default:
         return MaterialPageRoute(

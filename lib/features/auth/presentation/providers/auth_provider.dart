@@ -54,15 +54,26 @@ class AuthProvider extends ChangeNotifier {
   String? get accessToken => _accessToken;
   bool get isAuthenticated => _isAuthenticated;
 
-  /// Login - Send OTP to mobile number
-  Future<bool> login(String mobileNumber) async {
+  /// Login - Direct password login
+  Future<bool> login(String mobileNumber, String password) async {
     try {
       _isLoading = true;
       _error = null;
       notifyListeners();
 
-      final response = await _repository.login(mobileNumber);
-      _otpRefId = response.otpRefId;
+      final response = await _repository.login(mobileNumber, password);
+      // If the backend returns tokens directly
+      if (response is VerifyOtpResponse) {
+        _accessToken = response.accessToken;
+        _refreshToken = response.refreshToken;
+        _isAuthenticated = true;
+        await _saveTokens(_accessToken!, _refreshToken!);
+        await getMe();
+      } else if (response is LoginResponse) {
+        // Handle OTP flow if needed
+        _otpRefId = response.otpRefId;
+      }
+      
       _error = null;
       return true;
     } on NetworkException catch (e) {

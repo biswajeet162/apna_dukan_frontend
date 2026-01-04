@@ -37,12 +37,25 @@ class _LoginScreenState extends State<LoginScreen> {
     final input = _mobileOrEmailController.text.trim();
     final isEmail = input.contains('@');
     
-    final success = isEmail
-        ? await authProvider.login(input) // For email, you might need a different method
-        : await authProvider.login(input); // For mobile
+    final password = _passwordController.text;
+    
+    final success = await authProvider.login(input, password);
 
     if (success && mounted) {
-      Navigator.of(context).pop(true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('LoggedIn successfully!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 1),
+        ),
+      );
+
+      // Wait for user to see the message
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (mounted) {
+        AppNavigator.toHomeClearStack(context);
+      }
     } else if (mounted && authProvider.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -9,13 +9,14 @@ class AuthRemoteSource {
 
   AuthRemoteSource(this._apiClient);
 
-  /// Login - Send OTP to mobile number
-  Future<LoginResponse> login(String mobileNumber) async {
+  /// Login - Direct password login
+  Future<dynamic> login(String mobileNumber, String password) async {
     try {
       final response = await _apiClient.post<Map<String, dynamic>>(
         ApiEndpoints.login,
         data: {
           'mobileNumber': mobileNumber,
+          'password': password,
         },
         fromJson: (data) => data as Map<String, dynamic>,
       );
@@ -24,10 +25,15 @@ class AuthRemoteSource {
         throw NetworkException(response.message);
       }
 
-      return LoginResponse.fromJson(response.data!);
+      // Check if it returned tokens (password login) or otpRefId (otp login request)
+      if (response.data!.containsKey('accessToken')) {
+        return VerifyOtpResponse.fromJson(response.data!);
+      } else {
+        return LoginResponse.fromJson(response.data!);
+      }
     } catch (e) {
       if (e is NetworkException) rethrow;
-      throw NetworkException('Failed to send OTP: ${e.toString()}');
+      throw NetworkException('Failed to login: ${e.toString()}');
     }
   }
 

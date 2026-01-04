@@ -24,6 +24,12 @@ class UserModel {
     );
   }
 
+  /// Get user's first name
+  String get firstName => name.split(' ').first;
+
+  /// Get user's name initial
+  String get initial => name.isNotEmpty ? name[0].toUpperCase() : '';
+
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,

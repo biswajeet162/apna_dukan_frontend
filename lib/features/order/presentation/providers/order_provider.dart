@@ -98,6 +98,18 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
+  /// Clear all order data (e.g., on logout)
+  void clearData() {
+    _orders = [];
+    _orderDetail = null;
+    _paginatedResponse = null;
+    _currentPage = 0;
+    _error = null;
+    _isLoading = false;
+    _isLoadingMore = false;
+    notifyListeners();
+  }
+
   /// Clear error
   void clearError() {
     _error = null;

@@ -106,5 +106,10 @@ class AppNavigator {
   static Future<void> toHomeClearStack(BuildContext context) {
     return pushNamedAndRemoveUntil(context, AppRoutes.home, predicate: (route) => false);
   }
+
+  /// Navigate to login and clear stack
+  static Future<void> toLoginClearStack(BuildContext context) {
+    return pushNamedAndRemoveUntil(context, AppRoutes.login, predicate: (route) => false);
+  }
 }
 

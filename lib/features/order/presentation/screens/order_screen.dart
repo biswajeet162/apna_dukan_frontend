@@ -5,6 +5,7 @@ import '../../../../core/widgets/bottom_navigation_bar.dart';
 import '../providers/order_provider.dart';
 import '../../data/models/order_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/navigation/app_navigator.dart';
 
 /// Order screen displaying user's order history
 class OrderScreen extends StatefulWidget {
@@ -99,6 +100,30 @@ class _OrderScreenState extends State<OrderScreen> {
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        AppNavigator.toLogin(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryRed,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Sign In',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],

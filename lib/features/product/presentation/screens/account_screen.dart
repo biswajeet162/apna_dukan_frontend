@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/navigation/app_navigator.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../order/presentation/providers/order_provider.dart';
+import '../providers/product_provider.dart';
 
 /// Account screen sample page
 class AccountScreen extends StatelessWidget {
@@ -9,6 +13,12 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
+    final displayName = user?.name ?? 'User';
+    final email = user?.email ?? 'No email';
+    final initial = user?.initial ?? 'U';
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -53,10 +63,10 @@ class AccountScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                         color: AppColors.primaryRed,
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
-                          'B',
-                          style: TextStyle(
+                          initial,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -69,9 +79,9 @@ class AccountScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Biswa Mandal',
-                            style: TextStyle(
+                          Text(
+                            displayName,
+                            style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
@@ -79,7 +89,7 @@ class AccountScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'biswa.mandal@example.com',
+                            email,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -166,13 +176,22 @@ class AccountScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    final authProvider = context.read<AuthProvider>();
+                    final orderProvider = context.read<OrderProvider>();
+                    final productProvider = context.read<ProductProvider>();
+
+                    // Clear auth data and tokens
+                    await authProvider.logout();
+                    
+                    // Clear other provider data
+                    orderProvider.clearData();
+                    productProvider.reset();
+
                     // Navigate to login screen and clear navigation stack
-                    AppNavigator.pushNamedAndRemoveUntil(
-                      context,
-                      AppRoutes.login,
-                      predicate: (route) => false,
-                    );
+                    if (context.mounted) {
+                      AppNavigator.toLoginClearStack(context);
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red.shade50,

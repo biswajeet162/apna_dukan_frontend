@@ -7,6 +7,7 @@ import '../widgets/product_card_enhanced.dart';
 import 'product_detail_screen.dart';
 import 'category_screen.dart';
 import 'account_screen.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/navigation/app_navigator.dart';
 import '../../../../core/routes/app_routes.dart';
@@ -202,6 +203,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
             slivers: [
               // Collapsible Header with Name, Cart, Notification
               SliverAppBar(
+                automaticallyImplyLeading: false,
                 expandedHeight: 80,
                 floating: false,
                 pinned: false,
@@ -459,6 +461,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
 
   Widget _buildHeader() {
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
+    final displayName = user?.firstName ?? 'User';
+    final initial = user?.initial ?? 'U';
+
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: MediaQuery.of(context).size.width < 290 ? 8 : 16,
@@ -478,10 +485,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 shape: BoxShape.circle,
                 color: AppColors.primaryRed,
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'B',
-                  style: TextStyle(
+                  initial,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -506,7 +513,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Biswa Mandal',
+                  displayName,
                   style: TextStyle(
                     fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 18,
                     fontWeight: FontWeight.bold,

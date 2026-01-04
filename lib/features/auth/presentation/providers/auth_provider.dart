@@ -18,10 +18,21 @@ class AuthProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _accessToken = prefs.getString('access_token');
     _refreshToken = prefs.getString('refresh_token');
-    if (_accessToken != null) {
-      _isAuthenticated = true;
-      // Fetch user profile if token exists
+    
+    // Check if both tokens exist
+    if (_accessToken != null && _refreshToken != null) {
+      // Validity check: Try to fetch user profile
       await getMe();
+      // getMe will set _isAuthenticated to false if it receives an UnauthorizedException
+      if (_user != null) {
+        _isAuthenticated = true;
+      } else if (_error != null && _error!.contains('Unauthorized')) {
+        // Handled in getMe catch block
+      }
+    } else {
+      _isAuthenticated = false;
+      // If one is missing, clear both for consistency
+      await _clearTokens();
     }
     notifyListeners();
   }
@@ -178,10 +189,20 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
 
       _user = await _repository.getMe();
+      _isAuthenticated = true; // Successfully fetched profile, so we are authenticated
       _error = null;
+    } on UnauthorizedException catch (e) {
+      _error = e.message;
+      _user = null;
+      _isAuthenticated = false;
+      _accessToken = null;
+      _refreshToken = null;
+      await _clearTokens();
     } on NetworkException catch (e) {
       _error = e.message;
       _user = null;
+      // On other network errors, we don't necessarily log out immediately
+      // but _user will be null, and app may show error
     } catch (e) {
       _error = 'An unexpected error occurred: ${e.toString()}';
       _user = null;

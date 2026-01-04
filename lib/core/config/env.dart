@@ -3,7 +3,7 @@ enum AppEnvironment { local, dev, prod }
 /// Environment configuration
 class Env {
   /// Current environment
-  static const AppEnvironment current = AppEnvironment.local;
+  static const AppEnvironment current = AppEnvironment.prod;
 
   /// Use mock server instead of real API
   static const bool useMockServer = false;
@@ -18,7 +18,7 @@ class Env {
   static const String devApiUrl = 'https://dev-api.apnadukan.com';
   
   /// Production API URL
-  static const String productionApiUrl = 'https://api.apnadukan.com';
+  static const String productionApiUrl = 'https://apna-dukan-backend.onrender.com';
   
   /// Get the base URL based on environment and mock setting
   static String get baseUrl {

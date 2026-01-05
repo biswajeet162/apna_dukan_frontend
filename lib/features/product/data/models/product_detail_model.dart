@@ -30,22 +30,55 @@ class ProductDetailModel {
   });
 
   factory ProductDetailModel.fromJson(Map<String, dynamic> json) {
+    // Safely parse imageUrls - ensure it's a proper List<String>
+    List<String> parsedImageUrls = <String>[];
+    if (json['imageUrls'] != null) {
+      if (json['imageUrls'] is List) {
+        try {
+          // Explicitly convert each item to String to avoid type errors in Flutter Web
+          final List<dynamic> rawList = json['imageUrls'] as List<dynamic>;
+          parsedImageUrls = rawList.map((item) {
+            if (item == null) return '';
+            return item.toString();
+          }).toList();
+        } catch (e) {
+          // If conversion fails, use empty list
+          parsedImageUrls = <String>[];
+        }
+      }
+    }
+
     return ProductDetailModel(
-      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      id: _parseInt(json['id']),
       name: json['name']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
-      price: double.tryParse(json['price']?.toString() ?? '') ?? 0.0,
-      mrp: double.tryParse(json['mrp']?.toString() ?? '') ?? 0.0,
-      discountPercentage: double.tryParse(json['discountPercentage']?.toString() ?? '') ?? 0.0,
-      imageUrls: json['imageUrls'] is List
-          ? List<String>.from((json['imageUrls'] as List).map((e) => e.toString()))
-          : <String>[],
-      categoryId: int.tryParse(json['categoryId']?.toString() ?? '') ?? 0,
+      price: _parseDouble(json['price']),
+      mrp: _parseDouble(json['mrp']),
+      discountPercentage: _parseDouble(json['discountPercentage']),
+      imageUrls: parsedImageUrls,
+      categoryId: _parseInt(json['categoryId']),
       categoryName: json['categoryName']?.toString() ?? '',
-      stock: int.tryParse(json['stock']?.toString() ?? '') ?? 0,
-      rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
-      reviewsCount: int.tryParse(json['reviewsCount']?.toString() ?? '') ?? 0,
+      stock: _parseInt(json['stock']),
+      rating: _parseDouble(json['rating']),
+      reviewsCount: _parseInt(json['reviewsCount']),
     );
+  }
+
+  // Helper methods for safe parsing to avoid type errors in Flutter Web
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    final parsed = int.tryParse(value.toString());
+    return parsed ?? 0;
+  }
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    final parsed = double.tryParse(value.toString());
+    return parsed ?? 0.0;
   }
 
   Map<String, dynamic> toJson() {

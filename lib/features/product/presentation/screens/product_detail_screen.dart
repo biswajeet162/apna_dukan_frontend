@@ -75,6 +75,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             );
           }
 
+          // Safely get imageUrls with defensive checks
+          final imageUrls = product.imageUrls;
+          final safeImageUrls = imageUrls.where((url) => url.isNotEmpty).toList();
+
           return CustomScrollView(
             slivers: [
               // App Bar with Image
@@ -83,24 +87,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 pinned: true,
                 automaticallyImplyLeading: false,
                 flexibleSpace: FlexibleSpaceBar(
-                  background: product.imageUrls.isNotEmpty
+                  background: safeImageUrls.isNotEmpty
                       ? PageView.builder(
-                          itemCount: product.imageUrls.length,
+                          itemCount: safeImageUrls.length,
                           onPageChanged: (index) {
-                            setState(() {
-                              _selectedImageIndex = index;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                _selectedImageIndex = index.clamp(0, safeImageUrls.length - 1);
+                              });
+                            }
                           },
                           itemBuilder: (context, index) {
-                            return Image.network(
-                              product.imageUrls[index],
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey[200],
-                                  child: const Icon(Icons.image_not_supported),
-                                );
-                              },
+                            if (index >= 0 && index < safeImageUrls.length) {
+                              return Image.network(
+                                safeImageUrls[index],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[200],
+                                    child: const Icon(Icons.image_not_supported),
+                                  );
+                                },
+                              );
+                            }
+                            return Container(
+                              color: Colors.grey[200],
+                              child: const Icon(Icons.image_not_supported),
                             );
                           },
                         )
@@ -128,18 +140,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Image Indicators
-                      if (product.imageUrls.length > 1)
+                      if (safeImageUrls.length > 1)
                         SizedBox(
                           height: 60,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: product.imageUrls.length,
+                            itemCount: safeImageUrls.length,
                             itemBuilder: (context, index) {
+                              if (index < 0 || index >= safeImageUrls.length) {
+                                return const SizedBox.shrink();
+                              }
                               return GestureDetector(
                                 onTap: () {
-                                  setState(() {
-                                    _selectedImageIndex = index;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _selectedImageIndex = index.clamp(0, safeImageUrls.length - 1);
+                                    });
+                                  }
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.only(right: 8),
@@ -156,7 +173,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(6),
                                     child: Image.network(
-                                      product.imageUrls[index],
+                                      safeImageUrls[index],
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) {
                                         return const Icon(Icons.image);

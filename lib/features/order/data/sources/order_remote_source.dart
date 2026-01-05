@@ -28,7 +28,7 @@ class OrderRemoteSource {
           'page': page,
           'size': size,
         },
-        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : {},
+        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{},
       );
 
       if (!response.success || response.data == null) {
@@ -42,7 +42,7 @@ class OrderRemoteSource {
 
       final content = data['content'] is List
           ? (data['content'] as List)
-              .map((item) => OrderListModel.fromJson(item is Map ? Map<String, dynamic>.from(item) : {}))
+              .map((item) => OrderListModel.fromJson(item is Map ? Map<String, dynamic>.from(item) : <String, dynamic>{}))
               .toList()
           : <OrderListModel>[];
 
@@ -66,7 +66,7 @@ class OrderRemoteSource {
     try {
       final response = await _apiClient.get<Map<String, dynamic>>(
         ApiEndpoints.orderById(orderId),
-        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : {},
+        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{},
       );
 
       if (!response.success || response.data == null) {

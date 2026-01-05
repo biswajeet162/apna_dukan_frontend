@@ -28,9 +28,9 @@ class CategoryModel {
       level: int.tryParse(json['level']?.toString() ?? ''),
       children: json['children'] is List
           ? (json['children'] as List)
-              .map((child) => CategoryModel.fromJson(child is Map ? Map<String, dynamic>.from(child) : {}))
+              .map((child) => CategoryModel.fromJson(child is Map ? Map<String, dynamic>.from(child) : <String, dynamic>{}))
               .toList()
-          : [],
+          : <CategoryModel>[],
     );
   }
 

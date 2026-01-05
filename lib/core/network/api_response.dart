@@ -26,7 +26,9 @@ class ApiResponse<T> {
       success: safeJson['success'] ?? false,
       message: safeJson['message'] ?? '',
       data: safeJson['data'] != null
-          ? (fromJsonT != null ? fromJsonT(safeJson['data']) : safeJson['data'] as T)
+          ? (fromJsonT != null
+              ? fromJsonT(safeJson['data'])
+              : (safeJson['data'] is T ? safeJson['data'] as T : null))
           : null,
     );
   }

@@ -22,19 +22,18 @@ class PaginatedResponse<T> {
     Map<String, dynamic> json,
     T Function(dynamic) fromJsonT,
   ) {
-    final content = (json['content'] as List<dynamic>?)
-            ?.map((item) => fromJsonT(item))
-            .toList() ??
-        [];
+    final content = json['content'] is List
+        ? (json['content'] as List).map((item) => fromJsonT(item)).toList().cast<T>()
+        : <T>[];
 
     return PaginatedResponse<T>(
       content: content,
-      totalElements: json['totalElements']?.toInt() ?? 0,
-      totalPages: json['totalPages']?.toInt() ?? 0,
-      currentPage: json['number']?.toInt() ?? 0,
-      size: json['size']?.toInt() ?? 0,
-      hasNext: json['hasNext'] ?? false,
-      hasPrevious: json['hasPrevious'] ?? false,
+      totalElements: int.tryParse(json['totalElements']?.toString() ?? '') ?? 0,
+      totalPages: int.tryParse(json['totalPages']?.toString() ?? '') ?? 0,
+      currentPage: int.tryParse(json['number']?.toString() ?? '') ?? 0,
+      size: int.tryParse(json['size']?.toString() ?? '') ?? 0,
+      hasNext: json['hasNext'] == true,
+      hasPrevious: json['hasPrevious'] == true,
     );
   }
 }

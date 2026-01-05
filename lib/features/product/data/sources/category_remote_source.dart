@@ -16,7 +16,7 @@ class CategoryRemoteSource {
       fromJson: (data) {
         if (data is List) {
           return data
-              .map((item) => CategoryModel.fromJson(item is Map ? Map<String, dynamic>.from(item) : {}))
+              .map((item) => CategoryModel.fromJson(item is Map ? Map<String, dynamic>.from(item) : <String, dynamic>{}))
               .toList();
         }
           return <CategoryModel>[];
@@ -33,7 +33,7 @@ class CategoryRemoteSource {
   Future<CategoryModel> getCategoryById(int categoryId) async {
     final response = await _apiClient.get<CategoryModel>(
       ApiEndpoints.categoryById(categoryId),
-      fromJson: (data) => CategoryModel.fromJson(data is Map ? Map<String, dynamic>.from(data) : {}),
+      fromJson: (data) => CategoryModel.fromJson(data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{}),
     );
     if (response.data == null) {
       throw Exception('Category not found');
@@ -45,7 +45,7 @@ class CategoryRemoteSource {
   Future<CategoryModel> getCategoryBySlug(String slug) async {
     final response = await _apiClient.get<CategoryModel>(
       ApiEndpoints.categoryBySlug(slug),
-      fromJson: (data) => CategoryModel.fromJson(data is Map ? Map<String, dynamic>.from(data) : {}),
+      fromJson: (data) => CategoryModel.fromJson(data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{}),
     );
     if (response.data == null) {
       throw Exception('Category not found');
@@ -60,7 +60,7 @@ class CategoryRemoteSource {
       fromJson: (data) {
         if (data is List) {
           return data
-              .map((item) => CategoryModel.fromJson(item is Map ? Map<String, dynamic>.from(item) : {}))
+              .map((item) => CategoryModel.fromJson(item is Map ? Map<String, dynamic>.from(item) : <String, dynamic>{}))
               .toList();
         }
           return <CategoryModel>[];

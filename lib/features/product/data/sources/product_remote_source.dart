@@ -35,7 +35,7 @@ class ProductRemoteSource {
           'size': size,
           'sort': sort,
         },
-        fromJson: (data) => data is List ? data : [],
+        fromJson: (data) => data is List ? data : <dynamic>[],
       );
 
       if (!response.success || response.data == null) {
@@ -43,7 +43,7 @@ class ProductRemoteSource {
       }
 
       final products = response.data!
-          .map((json) => ProductListModel.fromJson(json is Map ? Map<String, dynamic>.from(json) : {}))
+          .map((json) => ProductListModel.fromJson(json is Map ? Map<String, dynamic>.from(json) : <String, dynamic>{}))
           .toList();
 
       // Since the mock API does not provide real pagination metadata,
@@ -68,7 +68,7 @@ class ProductRemoteSource {
     try {
       final response = await _apiClient.get<Map<String, dynamic>>(
         ApiEndpoints.productById(productId),
-        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : {},
+        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{},
       );
 
       if (!response.success || response.data == null) {
@@ -95,7 +95,7 @@ class ProductRemoteSource {
           'page': page,
           'size': size,
         },
-        fromJson: (data) => data is List ? data : [],
+        fromJson: (data) => data is List ? data : <dynamic>[],
       );
 
       if (!response.success || response.data == null) {
@@ -103,7 +103,7 @@ class ProductRemoteSource {
       }
 
       return response.data!
-          .map((json) => ProductListModel.fromJson(json is Map ? Map<String, dynamic>.from(json) : {}))
+          .map((json) => ProductListModel.fromJson(json is Map ? Map<String, dynamic>.from(json) : <String, dynamic>{}))
           .toList();
     } catch (e) {
       if (e is NetworkException) rethrow;
@@ -117,7 +117,7 @@ class ProductRemoteSource {
       final response = await _apiClient.get<List<dynamic>>(
         ApiEndpoints.productSearch,
         queryParameters: {'keyword': keyword},
-        fromJson: (data) => data is List ? data : [],
+        fromJson: (data) => data is List ? data : <dynamic>[],
       );
 
       if (!response.success || response.data == null) {
@@ -125,7 +125,7 @@ class ProductRemoteSource {
       }
 
       return response.data!
-          .map((json) => ProductListModel.fromJson(json is Map ? Map<String, dynamic>.from(json) : {}))
+          .map((json) => ProductListModel.fromJson(json is Map ? Map<String, dynamic>.from(json) : <String, dynamic>{}))
           .toList();
     } catch (e) {
       if (e is NetworkException) rethrow;
@@ -148,7 +148,7 @@ class ProductRemoteSource {
       final response = await _apiClient.get<List<dynamic>>(
         ApiEndpoints.productFilter,
         queryParameters: queryParams,
-        fromJson: (data) => data is List ? data : [],
+        fromJson: (data) => data is List ? data : <dynamic>[],
       );
 
       if (!response.success || response.data == null) {
@@ -156,7 +156,7 @@ class ProductRemoteSource {
       }
 
       return response.data!
-          .map((json) => ProductListModel.fromJson(json is Map ? Map<String, dynamic>.from(json) : {}))
+          .map((json) => ProductListModel.fromJson(json is Map ? Map<String, dynamic>.from(json) : <String, dynamic>{}))
           .toList();
     } catch (e) {
       if (e is NetworkException) rethrow;
@@ -170,7 +170,7 @@ class ProductRemoteSource {
       final response = await _apiClient.post<Map<String, dynamic>>(
         ApiEndpoints.products,
         data: request.toJson(),
-        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : {},
+        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{},
       );
 
       if (!response.success || response.data == null) {

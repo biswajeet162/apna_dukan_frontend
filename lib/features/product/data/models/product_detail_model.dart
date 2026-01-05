@@ -38,8 +38,8 @@ class ProductDetailModel {
       mrp: double.tryParse(json['mrp']?.toString() ?? '') ?? 0.0,
       discountPercentage: double.tryParse(json['discountPercentage']?.toString() ?? '') ?? 0.0,
       imageUrls: json['imageUrls'] is List
-          ? (json['imageUrls'] as List).map((e) => e.toString()).toList()
-          : [],
+          ? List<String>.from((json['imageUrls'] as List).map((e) => e.toString()))
+          : <String>[],
       categoryId: int.tryParse(json['categoryId']?.toString() ?? '') ?? 0,
       categoryName: json['categoryName']?.toString() ?? '',
       stock: int.tryParse(json['stock']?.toString() ?? '') ?? 0,

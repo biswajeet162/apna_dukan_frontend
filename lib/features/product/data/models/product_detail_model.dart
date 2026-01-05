@@ -31,20 +31,20 @@ class ProductDetailModel {
 
   factory ProductDetailModel.fromJson(Map<String, dynamic> json) {
     return ProductDetailModel(
-      id: json['id']?.toInt() ?? 0,
-      name: json['name'] ?? '',
-      description: json['description'] ?? '',
-      price: (json['price'] ?? 0.0).toDouble(),
-      mrp: (json['mrp'] ?? 0.0).toDouble(),
-      discountPercentage: (json['discountPercentage'] ?? 0.0).toDouble(),
-      imageUrls: json['imageUrls'] != null
-          ? List<String>.from(json['imageUrls'])
+      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      price: double.tryParse(json['price']?.toString() ?? '') ?? 0.0,
+      mrp: double.tryParse(json['mrp']?.toString() ?? '') ?? 0.0,
+      discountPercentage: double.tryParse(json['discountPercentage']?.toString() ?? '') ?? 0.0,
+      imageUrls: json['imageUrls'] is List
+          ? (json['imageUrls'] as List).map((e) => e.toString()).toList()
           : [],
-      categoryId: json['categoryId']?.toInt() ?? 0,
-      categoryName: json['categoryName'] ?? '',
-      stock: json['stock']?.toInt() ?? 0,
-      rating: (json['rating'] ?? 0.0).toDouble(),
-      reviewsCount: json['reviewsCount']?.toInt() ?? 0,
+      categoryId: int.tryParse(json['categoryId']?.toString() ?? '') ?? 0,
+      categoryName: json['categoryName']?.toString() ?? '',
+      stock: int.tryParse(json['stock']?.toString() ?? '') ?? 0,
+      rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
+      reviewsCount: int.tryParse(json['reviewsCount']?.toString() ?? '') ?? 0,
     );
   }
 

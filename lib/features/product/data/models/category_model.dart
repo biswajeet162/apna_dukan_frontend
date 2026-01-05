@@ -20,16 +20,17 @@ class CategoryModel {
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
-      id: json['id']?.toInt() ?? 0,
+      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
       name: json['name']?.toString() ?? '',
       slug: json['slug']?.toString() ?? '',
       imageUrl: json['imageUrl']?.toString(),
-      parentId: json['parentId']?.toInt(),
-      level: json['level']?.toInt(),
-      children: (json['children'] as List<dynamic>?)
-              ?.map((child) => CategoryModel.fromJson(Map<String, dynamic>.from(child as Map)))
-              .toList() ??
-          [],
+      parentId: int.tryParse(json['parentId']?.toString() ?? ''),
+      level: int.tryParse(json['level']?.toString() ?? ''),
+      children: json['children'] is List
+          ? (json['children'] as List)
+              .map((child) => CategoryModel.fromJson(child is Map ? Map<String, dynamic>.from(child) : {}))
+              .toList()
+          : [],
     );
   }
 

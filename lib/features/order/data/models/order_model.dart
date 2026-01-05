@@ -140,10 +140,10 @@ class PriceDetails {
 
   factory PriceDetails.fromJson(Map<String, dynamic> json) {
     return PriceDetails(
-      totalMrp: (json['totalMrp'] ?? 0.0).toDouble(),
-      discount: (json['discount'] ?? 0.0).toDouble(),
-      deliveryCharge: (json['deliveryCharge'] ?? 0.0).toDouble(),
-      payableAmount: (json['payableAmount'] ?? 0.0).toDouble(),
+      totalMrp: double.tryParse(json['totalMrp']?.toString() ?? '') ?? 0.0,
+      discount: double.tryParse(json['discount']?.toString() ?? '') ?? 0.0,
+      deliveryCharge: double.tryParse(json['deliveryCharge']?.toString() ?? '') ?? 0.0,
+      payableAmount: double.tryParse(json['payableAmount']?.toString() ?? '') ?? 0.0,
     );
   }
 }
@@ -168,12 +168,12 @@ class OrderListModel {
 
   factory OrderListModel.fromJson(Map<String, dynamic> json) {
     return OrderListModel(
-      orderId: json['orderId']?.toInt() ?? 0,
-      orderNumber: json['orderNumber'] ?? '',
-      orderStatus: OrderStatus.fromString(json['orderStatus'] ?? 'PLACED'),
-      placedAt: DateTime.parse(json['placedAt'] ?? DateTime.now().toIso8601String()),
-      totalAmount: (json['totalAmount'] ?? 0.0).toDouble(),
-      totalItems: json['totalItems']?.toInt() ?? 0,
+      orderId: int.tryParse(json['orderId']?.toString() ?? '') ?? 0,
+      orderNumber: json['orderNumber']?.toString() ?? '',
+      orderStatus: OrderStatus.fromString(json['orderStatus']?.toString() ?? 'PLACED'),
+      placedAt: DateTime.tryParse(json['placedAt']?.toString() ?? '') ?? DateTime.now(),
+      totalAmount: double.tryParse(json['totalAmount']?.toString() ?? '') ?? 0.0,
+      totalItems: int.tryParse(json['totalItems']?.toString() ?? '') ?? 0,
     );
   }
 
@@ -215,20 +215,21 @@ class OrderDetailModel {
 
   factory OrderDetailModel.fromJson(Map<String, dynamic> json) {
     return OrderDetailModel(
-      orderId: json['orderId']?.toInt() ?? 0,
-      orderNumber: json['orderNumber'] ?? '',
-      orderStatus: OrderStatus.fromString(json['orderStatus'] ?? 'PLACED'),
-      paymentStatus: PaymentStatus.fromString(json['paymentStatus'] ?? 'PENDING'),
-      placedAt: DateTime.parse(json['placedAt'] ?? DateTime.now().toIso8601String()),
+      orderId: int.tryParse(json['orderId']?.toString() ?? '') ?? 0,
+      orderNumber: json['orderNumber']?.toString() ?? '',
+      orderStatus: OrderStatus.fromString(json['orderStatus']?.toString() ?? 'PLACED'),
+      paymentStatus: PaymentStatus.fromString(json['paymentStatus']?.toString() ?? 'PENDING'),
+      placedAt: DateTime.tryParse(json['placedAt']?.toString() ?? '') ?? DateTime.now(),
       deliveredAt: json['deliveredAt'] != null
-          ? DateTime.parse(json['deliveredAt'])
+          ? DateTime.tryParse(json['deliveredAt'].toString())
           : null,
-      deliveryAddress: DeliveryAddress.fromJson(json['deliveryAddress'] != null ? Map<String, dynamic>.from(json['deliveryAddress'] as Map) : {}),
-      priceDetails: PriceDetails.fromJson(json['priceDetails'] != null ? Map<String, dynamic>.from(json['priceDetails'] as Map) : {}),
-      items: (json['items'] as List<dynamic>?)
-              ?.map((item) => OrderItemModel.fromJson(Map<String, dynamic>.from(item as Map)))
-              .toList() ??
-          [],
+      deliveryAddress: DeliveryAddress.fromJson(json['deliveryAddress'] is Map ? Map<String, dynamic>.from(json['deliveryAddress'] as Map) : {}),
+      priceDetails: PriceDetails.fromJson(json['priceDetails'] is Map ? Map<String, dynamic>.from(json['priceDetails'] as Map) : {}),
+      items: json['items'] is List
+          ? (json['items'] as List)
+              .map((item) => OrderItemModel.fromJson(item is Map ? Map<String, dynamic>.from(item as Map) : {}))
+              .toList()
+          : [],
     );
   }
 

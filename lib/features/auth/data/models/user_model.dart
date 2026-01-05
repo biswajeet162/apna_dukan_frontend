@@ -16,7 +16,7 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      userId: json['userId']?.toInt() ?? 0,
+      userId: int.tryParse(json['userId']?.toString() ?? '') ?? 0,
       name: json['name']?.toString() ?? '',
       mobileNumber: json['mobileNumber']?.toString() ?? '',
       email: json['email']?.toString(),
@@ -54,7 +54,7 @@ class LoginResponse {
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
       otpRefId: json['otpRefId']?.toString() ?? '',
-      expiresInSeconds: json['expiresInSeconds']?.toInt() ?? 0,
+      expiresInSeconds: int.tryParse(json['expiresInSeconds']?.toString() ?? '') ?? 0,
     );
   }
 }
@@ -77,11 +77,11 @@ class VerifyOtpResponse {
 
   factory VerifyOtpResponse.fromJson(Map<String, dynamic> json) {
     return VerifyOtpResponse(
-      userId: json['userId']?.toInt() ?? 0,
+      userId: int.tryParse(json['userId']?.toString() ?? '') ?? 0,
       isNewUser: json['isNewUser'] == true,
       accessToken: json['accessToken']?.toString() ?? '',
       refreshToken: json['refreshToken']?.toString() ?? '',
-      expiresIn: json['expiresIn']?.toInt() ?? 0,
+      expiresIn: int.tryParse(json['expiresIn']?.toString() ?? '') ?? 0,
     );
   }
 }

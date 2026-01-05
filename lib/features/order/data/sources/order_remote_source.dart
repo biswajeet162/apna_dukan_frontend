@@ -28,31 +28,32 @@ class OrderRemoteSource {
           'page': page,
           'size': size,
         },
-        fromJson: (data) => Map<String, dynamic>.from(data as Map),
+        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : {},
       );
 
       if (!response.success || response.data == null) {
         throw NetworkException(response.message);
       }
 
-      final data = response.data!['data'] != null ? Map<String, dynamic>.from(response.data!['data'] as Map) : null;
+      final data = response.data!['data'] is Map ? Map<String, dynamic>.from(response.data!['data'] as Map) : null;
       if (data == null) {
         throw NetworkException('Invalid response format');
       }
 
-      final content = (data['content'] as List<dynamic>?)
-              ?.map((json) => OrderListModel.fromJson(Map<String, dynamic>.from(json as Map)))
-              .toList() ??
-          [];
+      final content = data['content'] is List
+          ? (data['content'] as List)
+              .map((item) => OrderListModel.fromJson(item is Map ? Map<String, dynamic>.from(item) : {}))
+              .toList()
+          : <OrderListModel>[];
 
       return PaginatedResponse<OrderListModel>(
         content: content,
-        totalElements: data['totalElements']?.toInt() ?? content.length,
-        totalPages: data['totalPages']?.toInt() ?? 1,
-        currentPage: data['page']?.toInt() ?? page,
-        size: data['size']?.toInt() ?? size,
-        hasNext: (data['page']?.toInt() ?? page) < ((data['totalPages']?.toInt() ?? 1) - 1),
-        hasPrevious: (data['page']?.toInt() ?? page) > 0,
+        totalElements: int.tryParse(data['totalElements']?.toString() ?? '') ?? content.length,
+        totalPages: int.tryParse(data['totalPages']?.toString() ?? '') ?? 1,
+        currentPage: int.tryParse(data['page']?.toString() ?? '') ?? page,
+        size: int.tryParse(data['size']?.toString() ?? '') ?? size,
+        hasNext: (int.tryParse(data['page']?.toString() ?? '') ?? page) < ((int.tryParse(data['totalPages']?.toString() ?? '') ?? 1) - 1),
+        hasPrevious: (int.tryParse(data['page']?.toString() ?? '') ?? page) > 0,
       );
     } catch (e) {
       if (e is NetworkException) rethrow;
@@ -65,14 +66,14 @@ class OrderRemoteSource {
     try {
       final response = await _apiClient.get<Map<String, dynamic>>(
         ApiEndpoints.orderById(orderId),
-        fromJson: (data) => Map<String, dynamic>.from(data as Map),
+        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : {},
       );
 
       if (!response.success || response.data == null) {
         throw NetworkException(response.message);
       }
 
-      final data = response.data!['data'] != null ? Map<String, dynamic>.from(response.data!['data'] as Map) : null;
+      final data = response.data!['data'] is Map ? Map<String, dynamic>.from(response.data!['data'] as Map) : null;
       if (data == null) {
         throw NetworkException('Invalid response format');
       }

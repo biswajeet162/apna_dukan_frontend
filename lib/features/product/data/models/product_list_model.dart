@@ -23,14 +23,14 @@ class ProductListModel {
 
   factory ProductListModel.fromJson(Map<String, dynamic> json) {
     return ProductListModel(
-      id: json['id']?.toInt() ?? 0,
-      name: json['name'] ?? '',
-      price: (json['price'] ?? 0.0).toDouble(),
-      mrp: (json['mrp'] ?? 0.0).toDouble(),
-      discountPercentage: (json['discountPercentage'] ?? 0.0).toDouble(),
-      imageUrl: json['imageUrl'] ?? '',
-      rating: (json['rating'] ?? 0.0).toDouble(),
-      stockAvailable: json['stockAvailable'] ?? false,
+      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      name: json['name']?.toString() ?? '',
+      price: double.tryParse(json['price']?.toString() ?? '') ?? 0.0,
+      mrp: double.tryParse(json['mrp']?.toString() ?? '') ?? 0.0,
+      discountPercentage: double.tryParse(json['discountPercentage']?.toString() ?? '') ?? 0.0,
+      imageUrl: json['imageUrl']?.toString() ?? '',
+      rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
+      stockAvailable: json['stockAvailable'] == true,
     );
   }
 

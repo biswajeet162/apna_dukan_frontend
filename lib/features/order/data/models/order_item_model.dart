@@ -20,13 +20,13 @@ class OrderItemModel {
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
     return OrderItemModel(
-      productId: json['productId']?.toInt() ?? 0,
-      productName: json['productName'] ?? '',
-      imageUrl: json['imageUrl'] ?? '',
-      price: (json['price'] ?? 0.0).toDouble(),
-      mrp: (json['mrp'] ?? 0.0).toDouble(),
-      quantity: json['quantity']?.toInt() ?? 0,
-      subtotal: (json['subtotal'] ?? 0.0).toDouble(),
+      productId: int.tryParse(json['productId']?.toString() ?? '') ?? 0,
+      productName: json['productName']?.toString() ?? '',
+      imageUrl: json['imageUrl']?.toString() ?? '',
+      price: double.tryParse(json['price']?.toString() ?? '') ?? 0.0,
+      mrp: double.tryParse(json['mrp']?.toString() ?? '') ?? 0.0,
+      quantity: int.tryParse(json['quantity']?.toString() ?? '') ?? 0,
+      subtotal: double.tryParse(json['subtotal']?.toString() ?? '') ?? 0.0,
     );
   }
 

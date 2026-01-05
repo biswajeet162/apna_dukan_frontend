@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../features/auth/auth_routes.dart';
 import '../../features/product/product_routes.dart';
-import '../../features/product/presentation/screens/category_screen.dart';
-import '../../features/order/order_routes.dart';
-import '../../features/product/presentation/screens/account_screen.dart';
+import '../../features/category/presentation/category_page.dart';
+import '../../features/orders/order_routes.dart';
+import '../../features/profile/presentation/profile_page.dart';
 
 /// Centralized app routing configuration
 class AppRoutes {
@@ -80,7 +80,7 @@ class AppRoutes {
       case categories:
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => const CategoryScreen(),
+          builder: (_) => const CategoryPage(),
         );
       case orders:
         return OrderRoutes.generateRoute(
@@ -89,7 +89,7 @@ class AppRoutes {
       case account:
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => const AccountScreen(),
+          builder: (_) => const ProfilePage(),
         );
       default:
         return _buildNotFoundRoute(settings);

@@ -4,7 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/navigation/app_navigator.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../order/presentation/providers/order_provider.dart';
+import '../../../orders/presentation/providers/order_provider.dart';
 import '../providers/product_provider.dart';
 
 /// Account screen sample page

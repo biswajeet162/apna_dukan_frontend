@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'presentation/screens/product_list_screen.dart';
-import 'presentation/screens/product_detail_screen.dart';
+import 'presentation/product_list/product_list_page.dart';
+import 'presentation/product_detail/product_detail_page.dart';
 
 /// Product feature routes
 class ProductRoutes {
@@ -14,7 +14,7 @@ class ProductRoutes {
     if (routeName == productList || routeName == '/' || routeName.isEmpty) {
       return MaterialPageRoute(
         settings: settings,
-        builder: (_) => const ProductListScreen(),
+        builder: (_) => const ProductListPage(),
       );
     }
     
@@ -35,7 +35,7 @@ class ProductRoutes {
       final actualPath = '/products/$productId';
       return MaterialPageRoute(
         settings: RouteSettings(name: actualPath, arguments: productId),
-        builder: (_) => ProductDetailScreen(productId: productId),
+        builder: (_) => ProductDetailPage(productId: productId),
       );
     }
     

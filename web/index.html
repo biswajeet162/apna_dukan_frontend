@@ -32,6 +32,8 @@
       overflow: hidden;
       background-color: #000000;
       /* Match splash background if possible */
+      background-color: #001529;
+      /* Darker background to hide any brief transitions */
     }
   </style>
 
@@ -51,27 +53,46 @@
   <link rel="manifest" href="manifest.json">
 
   <script>
-    // PWA Install Prompt Diagnostic
+    // PWA & Viewport Synchronization Logic
+    let deferredPrompt;
+
     window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent Chrome 67 and earlier from automatically showing the prompt
       e.preventDefault();
-      // Stash the event so it can be triggered later.
-      window.deferredPrompt = e;
-      console.log('✅ PWA: App is installable! Event captured.');
+      deferredPrompt = e;
+      console.log('✅ PWA: App is installable!');
     });
 
-    window.addEventListener('appinstalled', (evt) => {
-      console.log('🎉 PWA: App was installed successfully');
-    });
+    // Enhanced Keyboard Dismissal Fix
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        const height = window.visualViewport.height;
+        const viewportHeight = window.innerHeight;
 
-    // Check if service worker is supported
+        // If visual viewport is nearly equal to window height, keyboard is likely dismissed
+        if (Math.abs(viewportHeight - height) < 50) {
+          console.log('🔄 Viewport Sync: Keyboard dismissed, forcing re-layout...');
+
+          // Force a layout recalculation by slightly jittering the height and scrolling
+          document.documentElement.style.height = '100.1%';
+
+          setTimeout(() => {
+            document.documentElement.style.height = '100%';
+            window.scrollTo(0, 0);
+
+            // Dispatch a window resize event to notify the Flutter engine
+            window.dispatchEvent(new Event('resize'));
+          }, 100);
+        }
+      });
+    }
+
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
+      window.addEventListener('load', () => {
         navigator.serviceWorker.getRegistrations().then(registrations => {
           if (registrations.length > 0) {
             console.log('📲 Service Worker is active');
           } else {
-            console.warn('⚠️ No Service Worker found. PWA might not be installable.');
+            console.warn('⚠️ No Service Worker found');
           }
         });
       });

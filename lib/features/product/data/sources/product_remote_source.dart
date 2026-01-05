@@ -68,14 +68,35 @@ class ProductRemoteSource {
     try {
       final response = await _apiClient.get<Map<String, dynamic>>(
         ApiEndpoints.productById(productId),
-        fromJson: (data) => data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{},
+        fromJson: (data) {
+          if (data == null) return <String, dynamic>{};
+          if (data is Map) {
+            // Recursively convert to Map<String, dynamic> to avoid type errors in Flutter Web
+            final Map<String, dynamic> result = <String, dynamic>{};
+            data.forEach((key, value) {
+              result[key.toString()] = value;
+            });
+            return result;
+          }
+          return <String, dynamic>{};
+        },
       );
 
       if (!response.success || response.data == null) {
         throw NetworkException(response.message);
       }
 
-      return ProductDetailModel.fromJson(response.data!);
+      // Ensure the data is properly typed before parsing
+      final productData = response.data!;
+      if (productData is! Map<String, dynamic>) {
+        final Map<String, dynamic> converted = <String, dynamic>{};
+        (productData as Map).forEach((key, value) {
+          converted[key.toString()] = value;
+        });
+        return ProductDetailModel.fromJson(converted);
+      }
+
+      return ProductDetailModel.fromJson(productData);
     } catch (e) {
       if (e is NetworkException) rethrow;
       throw NetworkException('Failed to fetch product: ${e.toString()}');

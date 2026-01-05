@@ -15,6 +15,21 @@ class ApiResponse<T> {
     this.data,
   });
 
+  /// Recursively convert nested Maps and Lists to proper types
+  /// This is critical for Flutter Web release mode to avoid type errors
+  static dynamic _sanitizeValue(dynamic value) {
+    if (value is Map) {
+      final Map<String, dynamic> sanitized = <String, dynamic>{};
+      value.forEach((key, val) {
+        sanitized[key.toString()] = _sanitizeValue(val);
+      });
+      return sanitized;
+    } else if (value is List) {
+      return value.map((item) => _sanitizeValue(item)).toList();
+    }
+    return value;
+  }
+
   factory ApiResponse.fromJson(
     dynamic json,
     T Function(dynamic)? fromJsonT,
@@ -24,13 +39,13 @@ class ApiResponse<T> {
     final Map<String, dynamic> safeJson = <String, dynamic>{};
     if (json is Map) {
       json.forEach((key, value) {
-        safeJson[key.toString()] = value;
+        safeJson[key.toString()] = _sanitizeValue(value);
       });
     }
     
     return ApiResponse<T>(
       success: safeJson['success'] ?? false,
-      message: safeJson['message'] ?? '',
+      message: safeJson['message']?.toString() ?? '',
       data: safeJson['data'] != null
           ? (fromJsonT != null
               ? fromJsonT(safeJson['data'])

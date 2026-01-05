@@ -19,22 +19,28 @@ class PaginatedResponse<T> {
   });
 
   factory PaginatedResponse.fromJson(
-    Map<String, dynamic> json,
+    dynamic json,
     T Function(dynamic) fromJsonT,
   ) {
-    final content = json['content'] is List
-        ? (json['content'] as List).map((item) => fromJsonT(item)).toList().cast<T>()
+    final Map<String, dynamic> safeJson = <String, dynamic>{};
+    if (json is Map) {
+      json.forEach((key, value) {
+        safeJson[key.toString()] = value;
+      });
+    }
+
+    final content = safeJson['content'] is List
+        ? (safeJson['content'] as List).map((item) => fromJsonT(item)).toList().cast<T>()
         : <T>[];
 
     return PaginatedResponse<T>(
       content: content,
-      totalElements: int.tryParse(json['totalElements']?.toString() ?? '') ?? 0,
-      totalPages: int.tryParse(json['totalPages']?.toString() ?? '') ?? 0,
-      currentPage: int.tryParse(json['number']?.toString() ?? '') ?? 0,
-      size: int.tryParse(json['size']?.toString() ?? '') ?? 0,
-      hasNext: json['hasNext'] == true,
-      hasPrevious: json['hasPrevious'] == true,
+      totalElements: int.tryParse(safeJson['totalElements']?.toString() ?? '') ?? 0,
+      totalPages: int.tryParse(safeJson['totalPages']?.toString() ?? '') ?? 0,
+      currentPage: int.tryParse(safeJson['number']?.toString() ?? '') ?? 0,
+      size: int.tryParse(safeJson['size']?.toString() ?? '') ?? 0,
+      hasNext: safeJson['hasNext'] == true,
+      hasPrevious: safeJson['hasPrevious'] == true,
     );
   }
 }
-

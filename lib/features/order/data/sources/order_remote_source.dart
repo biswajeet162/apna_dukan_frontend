@@ -35,7 +35,7 @@ class OrderRemoteSource {
         throw NetworkException(response.message);
       }
 
-      final data = response.data!['data'] is Map ? Map<String, dynamic>.from(response.data!['data'] as Map) : null;
+      final data = response.data!['data'] is Map ? Map<String, dynamic>.from(response.data!['data']) : null;
       if (data == null) {
         throw NetworkException('Invalid response format');
       }
@@ -73,7 +73,7 @@ class OrderRemoteSource {
         throw NetworkException(response.message);
       }
 
-      final data = response.data!['data'] is Map ? Map<String, dynamic>.from(response.data!['data'] as Map) : null;
+      final data = response.data!['data'] is Map ? Map<String, dynamic>.from(response.data!['data']) : null;
       if (data == null) {
         throw NetworkException('Invalid response format');
       }

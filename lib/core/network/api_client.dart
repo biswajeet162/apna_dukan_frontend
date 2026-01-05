@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../constants/api_endpoints.dart';
 import 'api_response.dart';
@@ -26,11 +27,13 @@ class ApiClient {
 
     // Add interceptors
     _dio.interceptors.add(AuthInterceptor());
-    _dio.interceptors.add(LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-      error: true,
-    ));
+    if (!kReleaseMode) {
+      _dio.interceptors.add(LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        error: true,
+      ));
+    }
   }
 
   // Removed manual token management in favor of AuthInterceptor
@@ -41,9 +44,11 @@ class ApiClient {
     T Function(dynamic)? fromJson,
   ) async {
     try {
-      final data = response.data;
+      final dynamic data = response.data;
       if (data is Map) {
-        return ApiResponse.fromJson(data, fromJson);
+        // Explicitly create a new Map to ensure we break any internal Dio/Web specific Map types
+        final mapData = Map<dynamic, dynamic>.from(data);
+        return ApiResponse.fromJson(mapData, fromJson);
       }
       throw NetworkException('Invalid response format');
     } catch (e) {

@@ -16,11 +16,17 @@ class ApiResponse<T> {
   });
 
   factory ApiResponse.fromJson(
-    Map<dynamic, dynamic> json,
+    dynamic json,
     T Function(dynamic)? fromJsonT,
   ) {
-    // Safely cast keys to String for internal usage if needed
-    final Map<String, dynamic> safeJson = Map<String, dynamic>.from(json);
+    // Manually build the map to ensure it's a clean Map<String, dynamic>
+    // This is the safest way to avoid 'ki vs fL' TypeErrors in Flutter Web release mode
+    final Map<String, dynamic> safeJson = <String, dynamic>{};
+    if (json is Map) {
+      json.forEach((key, value) {
+        safeJson[key.toString()] = value;
+      });
+    }
     
     return ApiResponse<T>(
       success: safeJson['success'] ?? false,

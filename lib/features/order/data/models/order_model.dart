@@ -223,13 +223,13 @@ class OrderDetailModel {
       deliveredAt: json['deliveredAt'] != null
           ? DateTime.tryParse(json['deliveredAt'].toString())
           : null,
-      deliveryAddress: DeliveryAddress.fromJson(json['deliveryAddress'] is Map ? Map<String, dynamic>.from(json['deliveryAddress'] as Map) : {}),
-      priceDetails: PriceDetails.fromJson(json['priceDetails'] is Map ? Map<String, dynamic>.from(json['priceDetails'] as Map) : {}),
+      deliveryAddress: DeliveryAddress.fromJson(json['deliveryAddress'] is Map ? Map<String, dynamic>.from(json['deliveryAddress']) : <String, dynamic>{}),
+      priceDetails: PriceDetails.fromJson(json['priceDetails'] is Map ? Map<String, dynamic>.from(json['priceDetails']) : <String, dynamic>{}),
       items: json['items'] is List
           ? (json['items'] as List)
-              .map((item) => OrderItemModel.fromJson(item is Map ? Map<String, dynamic>.from(item as Map) : {}))
+              .map((item) => OrderItemModel.fromJson(item is Map ? Map<String, dynamic>.from(item) : <String, dynamic>{}))
               .toList()
-          : [],
+          : <OrderItemModel>[],
     );
   }
 

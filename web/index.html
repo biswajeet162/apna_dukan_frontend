@@ -25,14 +25,45 @@
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="apna_dukan">
+  <meta name="apple-mobile-web-app-title" content="Apna Dukan">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- PWA Theme Color -->
+  <meta name="theme-color" content="#E53935">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png" />
 
-  <title>apna_dukan</title>
+  <title>Apna Dukan</title>
   <link rel="manifest" href="manifest.json">
+
+  <script>
+    // PWA Install Prompt Diagnostic
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      window.deferredPrompt = e;
+      console.log('✅ PWA: App is installable! Event captured.');
+    });
+
+    window.addEventListener('appinstalled', (evt) => {
+      console.log('🎉 PWA: App was installed successfully');
+    });
+
+    // Check if service worker is supported
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          if (registrations.length > 0) {
+            console.log('📲 Service Worker is active');
+          } else {
+            console.warn('⚠️ No Service Worker found. PWA might not be installable.');
+          }
+        });
+      });
+    }
+  </script>
 </head>
 
 <body>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../features/auth/auth_routes.dart';
 import '../../features/product/product_routes.dart';
+import '../../features/home/presentation/home_page.dart';
 import '../../features/category/presentation/category_page.dart';
 import '../../features/orders/order_routes.dart';
 import '../../features/profile/presentation/profile_page.dart';
@@ -31,7 +32,15 @@ class AppRoutes {
     final path = routeName.startsWith('/') ? routeName : '/$routeName';
 
     // Handle home route
-    if (path == home || path == products) {
+    if (path == home) {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (_) => const HomePage(),
+      );
+    }
+    
+    // Handle products route
+    if (path == products) {
       return ProductRoutes.generateRoute(
         RouteSettings(name: ProductRoutes.productList),
       );

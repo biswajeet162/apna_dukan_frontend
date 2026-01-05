@@ -42,11 +42,8 @@ class _ProductListPageState extends State<ProductListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: _buildProductList(),
-      ),
+    return SafeArea(
+      child: _buildProductList(),
     );
   }
 

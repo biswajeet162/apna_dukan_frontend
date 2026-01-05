@@ -1,17 +1,23 @@
+import 'package:flutter/foundation.dart';
+
 enum AppEnvironment { local, dev, prod }
 
 /// Environment configuration
 class Env {
-  /// Current environment
-  static const AppEnvironment current = AppEnvironment.prod;
+  /// Current environment - automatically determined based on platform and build mode
+  static AppEnvironment get current {
+    if (!kIsWeb) {
+      // Android / iOS always use production backend as requested
+      return AppEnvironment.prod;
+    }
+    
+    // For Web, switch based on debug/release mode
+    return kReleaseMode ? AppEnvironment.prod : AppEnvironment.local;
+  }
 
-  /// Use mock server instead of real API
-  static const bool useMockServer = false;
-  
-  /// Deployed mock server URL
-  static const String mockServerUrl = 'https://json-mock-server-7vtn.onrender.com/';
-  
   /// Local API URL
+  /// For Android emulator, use 'http://10.0.2.2:8080'
+  /// For iOS simulator or Web, use 'http://localhost:8080'
   static const String localApiUrl = 'http://localhost:8080';
   
   /// Development API URL
@@ -20,10 +26,8 @@ class Env {
   /// Production API URL
   static const String productionApiUrl = 'https://apna-dukan-backend.onrender.com';
   
-  /// Get the base URL based on environment and mock setting
+  /// Get the base URL based on environment
   static String get baseUrl {
-    if (useMockServer) return mockServerUrl;
-    
     switch (current) {
       case AppEnvironment.local:
         return localApiUrl;

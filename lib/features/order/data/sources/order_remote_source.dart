@@ -28,20 +28,20 @@ class OrderRemoteSource {
           'page': page,
           'size': size,
         },
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {
         throw NetworkException(response.message);
       }
 
-      final data = response.data!['data'] as Map<String, dynamic>?;
+      final data = response.data!['data'] != null ? Map<String, dynamic>.from(response.data!['data'] as Map) : null;
       if (data == null) {
         throw NetworkException('Invalid response format');
       }
 
       final content = (data['content'] as List<dynamic>?)
-              ?.map((json) => OrderListModel.fromJson(json as Map<String, dynamic>))
+              ?.map((json) => OrderListModel.fromJson(Map<String, dynamic>.from(json as Map)))
               .toList() ??
           [];
 
@@ -65,14 +65,14 @@ class OrderRemoteSource {
     try {
       final response = await _apiClient.get<Map<String, dynamic>>(
         ApiEndpoints.orderById(orderId),
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {
         throw NetworkException(response.message);
       }
 
-      final data = response.data!['data'] as Map<String, dynamic>?;
+      final data = response.data!['data'] != null ? Map<String, dynamic>.from(response.data!['data'] as Map) : null;
       if (data == null) {
         throw NetworkException('Invalid response format');
       }

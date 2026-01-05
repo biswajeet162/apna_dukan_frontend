@@ -42,7 +42,7 @@ class ApiClient {
   ) async {
     try {
       final data = response.data;
-      if (data is Map<String, dynamic>) {
+      if (data is Map) {
         return ApiResponse.fromJson(data, fromJson);
       }
       throw NetworkException('Invalid response format');

@@ -18,7 +18,7 @@ class AuthRemoteSource {
           'mobileNumber': mobileNumber,
           'password': password,
         },
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {
@@ -55,7 +55,7 @@ class AuthRemoteSource {
           if (lastName != null) 'lastName': lastName,
           if (email != null) 'email': email,
         },
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {
@@ -78,7 +78,7 @@ class AuthRemoteSource {
           'otpRefId': otpRefId,
           'otp': otp,
         },
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {
@@ -100,7 +100,7 @@ class AuthRemoteSource {
         data: {
           'refreshToken': refreshToken,
         },
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {
@@ -136,7 +136,7 @@ class AuthRemoteSource {
     try {
       final response = await _apiClient.get<Map<String, dynamic>>(
         ApiEndpoints.me,
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {
@@ -163,7 +163,7 @@ class AuthRemoteSource {
       final response = await _apiClient.put<Map<String, dynamic>>(
         ApiEndpoints.updateProfile,
         data: data,
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {

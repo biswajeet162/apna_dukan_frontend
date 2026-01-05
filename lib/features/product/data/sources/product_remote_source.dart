@@ -43,7 +43,7 @@ class ProductRemoteSource {
       }
 
       final products = response.data!
-          .map((json) => ProductListModel.fromJson(json as Map<String, dynamic>))
+          .map((json) => ProductListModel.fromJson(Map<String, dynamic>.from(json as Map)))
           .toList();
 
       // Since the mock API does not provide real pagination metadata,
@@ -68,7 +68,7 @@ class ProductRemoteSource {
     try {
       final response = await _apiClient.get<Map<String, dynamic>>(
         ApiEndpoints.productById(productId),
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {
@@ -103,7 +103,7 @@ class ProductRemoteSource {
       }
 
       return response.data!
-          .map((json) => ProductListModel.fromJson(json as Map<String, dynamic>))
+          .map((json) => ProductListModel.fromJson(Map<String, dynamic>.from(json as Map)))
           .toList();
     } catch (e) {
       if (e is NetworkException) rethrow;
@@ -125,7 +125,7 @@ class ProductRemoteSource {
       }
 
       return response.data!
-          .map((json) => ProductListModel.fromJson(json as Map<String, dynamic>))
+          .map((json) => ProductListModel.fromJson(Map<String, dynamic>.from(json as Map)))
           .toList();
     } catch (e) {
       if (e is NetworkException) rethrow;
@@ -156,7 +156,7 @@ class ProductRemoteSource {
       }
 
       return response.data!
-          .map((json) => ProductListModel.fromJson(json as Map<String, dynamic>))
+          .map((json) => ProductListModel.fromJson(Map<String, dynamic>.from(json as Map)))
           .toList();
     } catch (e) {
       if (e is NetworkException) rethrow;
@@ -170,7 +170,7 @@ class ProductRemoteSource {
       final response = await _apiClient.post<Map<String, dynamic>>(
         ApiEndpoints.products,
         data: request.toJson(),
-        fromJson: (data) => data as Map<String, dynamic>,
+        fromJson: (data) => Map<String, dynamic>.from(data as Map),
       );
 
       if (!response.success || response.data == null) {

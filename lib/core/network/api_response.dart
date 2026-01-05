@@ -16,14 +16,17 @@ class ApiResponse<T> {
   });
 
   factory ApiResponse.fromJson(
-    Map<String, dynamic> json,
+    Map<dynamic, dynamic> json,
     T Function(dynamic)? fromJsonT,
   ) {
+    // Safely cast keys to String for internal usage if needed
+    final Map<String, dynamic> safeJson = Map<String, dynamic>.from(json);
+    
     return ApiResponse<T>(
-      success: json['success'] ?? false,
-      message: json['message'] ?? '',
-      data: json['data'] != null
-          ? (fromJsonT != null ? fromJsonT(json['data']) : json['data'] as T)
+      success: safeJson['success'] ?? false,
+      message: safeJson['message'] ?? '',
+      data: safeJson['data'] != null
+          ? (fromJsonT != null ? fromJsonT(safeJson['data']) : safeJson['data'] as T)
           : null,
     );
   }

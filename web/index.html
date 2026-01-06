@@ -20,7 +20,7 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover">
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover, height=device-height">
   <meta name="description" content="A new Flutter project.">
 
   <style>
@@ -60,28 +60,112 @@
       console.log('✅ PWA: App is installable!');
     });
 
-    // Enhanced Keyboard Dismissal Fix
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        const height = window.visualViewport.height;
-        const viewportHeight = window.innerHeight;
+    // Enhanced Keyboard Dismissal Fix for Flutter Web Mobile
+    let lastViewportHeight = window.innerHeight;
+    let keyboardDismissTimer = null;
 
-        // If visual viewport is nearly equal to window height, keyboard is likely dismissed
-        if (Math.abs(viewportHeight - height) < 50) {
-          console.log('🔄 Viewport Sync: Keyboard dismissed, forcing re-layout...');
-
-          // Force a layout recalculation by slightly jittering the height and scrolling
-          document.documentElement.style.height = '100.1%';
-
-          setTimeout(() => {
-            document.documentElement.style.height = '100%';
-            window.scrollTo(0, 0);
-
-            // Dispatch a window resize event to notify the Flutter engine
-            window.dispatchEvent(new Event('resize'));
-          }, 100);
+    // Function to force viewport recalculation
+    function forceViewportRecalculation() {
+      // Store current scroll position
+      const scrollY = window.scrollY;
+      
+      // Force a layout recalculation
+      document.documentElement.style.height = '100.1%';
+      document.body.style.height = '100.1%';
+      
+      // Use requestAnimationFrame for smooth transition
+      requestAnimationFrame(() => {
+        document.documentElement.style.height = '100%';
+        document.body.style.height = '100%';
+        
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+        
+        // Dispatch resize event to notify Flutter engine
+        window.dispatchEvent(new Event('resize'));
+        
+        // Also trigger a metrics change event
+        if (window.onMetricsChanged) {
+          window.onMetricsChanged();
         }
       });
+    }
+
+    // Handle visual viewport changes (modern browsers)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        const currentHeight = window.visualViewport.height;
+        const windowHeight = window.innerHeight;
+        const heightDiff = windowHeight - currentHeight;
+
+        // Clear any pending timer
+        if (keyboardDismissTimer) {
+          clearTimeout(keyboardDismissTimer);
+        }
+
+        // If viewport height is close to window height, keyboard is likely dismissed
+        if (heightDiff < 50 && lastViewportHeight < currentHeight) {
+          console.log('🔄 Viewport Sync: Keyboard dismissed, forcing re-layout...');
+          
+          // Debounce the fix to avoid multiple rapid calls
+          keyboardDismissTimer = setTimeout(() => {
+            forceViewportRecalculation();
+            lastViewportHeight = currentHeight;
+          }, 150);
+        } else {
+          lastViewportHeight = currentHeight;
+        }
+      });
+    }
+
+    // Fallback: Handle window resize events (for older browsers or additional triggers)
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      // Debounce resize events
+      if (resizeTimer) {
+        clearTimeout(resizeTimer);
+      }
+      
+      resizeTimer = setTimeout(() => {
+        const currentHeight = window.innerHeight;
+        
+        // If height increased significantly, keyboard was likely dismissed
+        if (currentHeight > lastViewportHeight + 100) {
+          console.log('🔄 Window Resize: Potential keyboard dismissal detected');
+          forceViewportRecalculation();
+          lastViewportHeight = currentHeight;
+        }
+      }, 200);
+    });
+
+    // Handle focus events to detect keyboard dismissal
+    let activeElement = null;
+    document.addEventListener('focusin', (e) => {
+      activeElement = e.target;
+    });
+
+    document.addEventListener('focusout', (e) => {
+      // When focus leaves an input, keyboard might be dismissed
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        setTimeout(() => {
+          // Check if viewport has restored
+          const currentHeight = window.innerHeight;
+          if (window.visualViewport) {
+            const viewportHeight = window.visualViewport.height;
+            if (Math.abs(currentHeight - viewportHeight) < 50) {
+              console.log('🔄 Focus Out: Keyboard dismissed, forcing re-layout...');
+              forceViewportRecalculation();
+            }
+          }
+        }, 300);
+      }
+      activeElement = null;
+    });
+
+    // Initial height tracking
+    lastViewportHeight = window.innerHeight;
+    if (window.visualViewport) {
+      lastViewportHeight = window.visualViewport.height;
     }
 
     if ('serviceWorker' in navigator) {

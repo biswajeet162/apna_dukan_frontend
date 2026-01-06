@@ -145,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     keyboardType: TextInputType.name,
                     textCapitalization: TextCapitalization.words,
                     decoration: InputDecoration(
-                      hintText: 'Rahul',
+                      hintText: 'Biswa',
                       filled: true,
                       fillColor: Colors.grey.shade50,
                       border: OutlineInputBorder(
@@ -180,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     keyboardType: TextInputType.name,
                     textCapitalization: TextCapitalization.words,
                     decoration: InputDecoration(
-                      hintText: 'Sharma',
+                      hintText: 'Mandal',
                       filled: true,
                       fillColor: Colors.grey.shade50,
                       border: OutlineInputBorder(
@@ -265,7 +265,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      hintText: 'rahul@example.com',
+                      hintText: 'biswa@gmail.com',
                       filled: true,
                       fillColor: Colors.grey.shade50,
                       prefixIcon: Icon(Icons.email_outlined, color: Colors.grey[600]),

@@ -97,14 +97,24 @@ class AppNavigator {
     return pushNamed(context, AppRoutes.orders);
   }
 
-  /// Navigate to home
-  static Future<void> toHome(BuildContext context) {
-    return pushNamedAndRemoveUntil(context, AppRoutes.home);
+  /// Navigate to dashboard
+  static Future<void> toDashboard(BuildContext context) {
+    return pushNamedAndRemoveUntil(context, AppRoutes.dashboard);
   }
 
-  /// Navigate to home and clear stack
+  /// Navigate to dashboard and clear stack
+  static Future<void> toDashboardClearStack(BuildContext context) {
+    return pushNamedAndRemoveUntil(context, AppRoutes.dashboard, predicate: (route) => false);
+  }
+
+  /// Navigate to home (alias for dashboard)
+  static Future<void> toHome(BuildContext context) {
+    return toDashboard(context);
+  }
+
+  /// Navigate to home and clear stack (alias for dashboard)
   static Future<void> toHomeClearStack(BuildContext context) {
-    return pushNamedAndRemoveUntil(context, AppRoutes.home, predicate: (route) => false);
+    return toDashboardClearStack(context);
   }
 
   /// Navigate to login and clear stack

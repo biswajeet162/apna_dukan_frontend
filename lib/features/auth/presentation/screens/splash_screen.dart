@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // Only redirect if we are still on the splash screen and it's THE CURRENT route
     // If a deep link (like #/register) was pushed on top, isCurrent will be false.
     if (ModalRoute.of(context)?.isCurrent ?? false) {
-       Navigator.pushReplacementNamed(context, AppRoutes.home);
+       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     }
   }
 

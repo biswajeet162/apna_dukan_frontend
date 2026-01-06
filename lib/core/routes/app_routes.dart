@@ -5,10 +5,12 @@ import '../../features/home/presentation/home_page.dart';
 import '../../features/category/presentation/category_page.dart';
 import '../../features/orders/order_routes.dart';
 import '../../features/profile/presentation/profile_page.dart';
+import '../../features/dashboard/presentation/dashboard_page.dart';
 
 /// Centralized app routing configuration
 class AppRoutes {
   // Base routes
+  static const String dashboard = '/dashboard';
   static const String home = '/';
   static const String products = '/products';
   static const String productDetail = '/products/:id';
@@ -31,11 +33,11 @@ class AppRoutes {
     // URL like /#/products/123 will have routeName as /products/123
     final path = routeName.startsWith('/') ? routeName : '/$routeName';
 
-    // Handle home route
-    if (path == home) {
+    // Handle dashboard route (default route)
+    if (path == dashboard || path == home) {
       return MaterialPageRoute(
         settings: settings,
-        builder: (_) => const HomePage(),
+        builder: (_) => const DashboardPage(),
       );
     }
     

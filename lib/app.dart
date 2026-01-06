@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        initialRoute: AppRoutes.splash,
+        initialRoute: AppRoutes.dashboard,
         onGenerateRoute: AppRoutes.generateRoute,
         // Enable web URL handling and viewport fix
         builder: (context, child) {

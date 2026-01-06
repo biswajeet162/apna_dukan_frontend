@@ -27,11 +27,24 @@
     html,
     body {
       height: 100%;
+      height: 100vh; /* Use viewport height */
+      height: 100dvh; /* Dynamic viewport height for mobile */
       margin: 0;
       padding: 0;
       overflow: hidden;
       background-color: #001529;
       /* Darker background to hide any brief transitions */
+      position: fixed;
+      width: 100%;
+      width: 100vw;
+    }
+    
+    /* Ensure Flutter app container takes full height */
+    flt-glass-pane,
+    flt-scene-host {
+      height: 100% !important;
+      height: 100vh !important;
+      height: 100dvh !important;
     }
   </style>
 
@@ -64,30 +77,62 @@
     let lastViewportHeight = window.innerHeight;
     let keyboardDismissTimer = null;
 
-    // Function to force viewport recalculation
+    // Function to force viewport recalculation - More aggressive approach
     function forceViewportRecalculation() {
+      console.log('🔄 Forcing viewport recalculation...');
+      
       // Store current scroll position
       const scrollY = window.scrollY;
+      const scrollX = window.scrollX;
       
-      // Force a layout recalculation
+      // Get the Flutter app container
+      const flutterView = document.querySelector('flt-glass-pane') || 
+                         document.querySelector('flt-scene-host') ||
+                         document.body;
+      
+      // Multiple aggressive methods to force recalculation
+      // Method 1: Height jitter
       document.documentElement.style.height = '100.1%';
       document.body.style.height = '100.1%';
+      if (flutterView) {
+        flutterView.style.height = '100.1%';
+      }
       
-      // Use requestAnimationFrame for smooth transition
+      // Method 2: Use multiple animation frames for better sync
       requestAnimationFrame(() => {
         document.documentElement.style.height = '100%';
         document.body.style.height = '100%';
+        if (flutterView) {
+          flutterView.style.height = '100%';
+        }
         
         // Restore scroll position
-        window.scrollTo(0, scrollY);
+        window.scrollTo(scrollX, scrollY);
         
-        // Dispatch resize event to notify Flutter engine
+        // Method 3: Dispatch multiple events
         window.dispatchEvent(new Event('resize'));
+        window.dispatchEvent(new Event('orientationchange'));
         
-        // Also trigger a metrics change event
-        if (window.onMetricsChanged) {
-          window.onMetricsChanged();
+        // Method 4: Force a visual viewport update
+        if (window.visualViewport) {
+          window.visualViewport.dispatchEvent(new Event('resize'));
         }
+        
+        // Method 5: Trigger a metrics change if available
+        if (window.onMetricsChanged) {
+          try {
+            window.onMetricsChanged();
+          } catch (e) {
+            console.log('onMetricsChanged not available');
+          }
+        }
+        
+        // Method 6: Additional delayed fix
+        setTimeout(() => {
+          document.documentElement.style.height = '100%';
+          document.body.style.height = '100%';
+          window.dispatchEvent(new Event('resize'));
+        }, 50);
       });
     }
 
@@ -104,14 +149,31 @@
         }
 
         // If viewport height is close to window height, keyboard is likely dismissed
-        if (heightDiff < 50 && lastViewportHeight < currentHeight) {
-          console.log('🔄 Viewport Sync: Keyboard dismissed, forcing re-layout...');
+        // Also check if height increased significantly
+        const heightIncreased = currentHeight > lastViewportHeight + 50;
+        const keyboardDismissed = heightDiff < 100 && heightIncreased;
+        
+        if (keyboardDismissed) {
+          console.log('🔄 Viewport Sync: Keyboard dismissed detected', {
+            currentHeight,
+            windowHeight,
+            lastViewportHeight,
+            heightDiff
+          });
           
-          // Debounce the fix to avoid multiple rapid calls
+          // Clear any pending timer
+          if (keyboardDismissTimer) {
+            clearTimeout(keyboardDismissTimer);
+          }
+          
+          // Immediate fix
+          forceViewportRecalculation();
+          
+          // Debounced additional fix
           keyboardDismissTimer = setTimeout(() => {
             forceViewportRecalculation();
             lastViewportHeight = currentHeight;
-          }, 150);
+          }, 200);
         } else {
           lastViewportHeight = currentHeight;
         }
@@ -147,19 +209,47 @@
     document.addEventListener('focusout', (e) => {
       // When focus leaves an input, keyboard might be dismissed
       if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        console.log('🔄 Focus Out: Input field lost focus');
+        
+        // Multiple delayed checks to catch keyboard dismissal
+        [100, 300, 500].forEach((delay) => {
+          setTimeout(() => {
+            const currentHeight = window.innerHeight;
+            if (window.visualViewport) {
+              const viewportHeight = window.visualViewport.height;
+              const heightDiff = Math.abs(currentHeight - viewportHeight);
+              
+              // If viewport is close to window height, keyboard is dismissed
+              if (heightDiff < 100) {
+                console.log('🔄 Focus Out: Keyboard dismissed detected, forcing re-layout...');
+                forceViewportRecalculation();
+              }
+            } else {
+              // Fallback: if no visualViewport, just force recalculation
+              forceViewportRecalculation();
+            }
+          }, delay);
+        });
+      }
+      activeElement = null;
+    });
+    
+    // Additional: Listen for touch events that might dismiss keyboard
+    document.addEventListener('touchstart', (e) => {
+      // If touching outside an input, keyboard might be dismissed
+      const target = e.target;
+      if (target && target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
         setTimeout(() => {
-          // Check if viewport has restored
-          const currentHeight = window.innerHeight;
           if (window.visualViewport) {
+            const currentHeight = window.innerHeight;
             const viewportHeight = window.visualViewport.height;
-            if (Math.abs(currentHeight - viewportHeight) < 50) {
-              console.log('🔄 Focus Out: Keyboard dismissed, forcing re-layout...');
+            if (Math.abs(currentHeight - viewportHeight) < 100) {
+              console.log('🔄 Touch: Keyboard dismissed, forcing re-layout...');
               forceViewportRecalculation();
             }
           }
-        }, 300);
+        }, 200);
       }
-      activeElement = null;
     });
 
     // Initial height tracking

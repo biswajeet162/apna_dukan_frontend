@@ -213,15 +213,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                           SizedBox(width: MediaQuery.of(context).size.width < 290 ? 6 : 8),
-                          Flexible(
-                            child: Text(
-                              '(${product.reviewsCount.toString()} reviews)',
-                              style: TextStyle(
-                                fontSize: MediaQuery.of(context).size.width < 290 ? 12 : 14,
-                                color: Colors.grey[600],
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            '(${product.reviewsCount.toString()} reviews)',
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width < 290 ? 12 : 14,
+                              color: Colors.grey[600],
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -281,18 +279,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             size: MediaQuery.of(context).size.width < 290 ? 18 : 24,
                           ),
                           SizedBox(width: MediaQuery.of(context).size.width < 290 ? 6 : 8),
-                          Flexible(
-                            child: Text(
-                              product.stock > 0
-                                  ? 'In Stock (${product.stock} available)'
-                                  : 'Out of Stock',
-                              style: TextStyle(
-                                fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
-                                color: product.stock > 0 ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            product.stock > 0
+                                ? 'In Stock (${product.stock} available)'
+                                : 'Out of Stock',
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
+                              color: product.stock > 0 ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.w500,
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -308,15 +304,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          Flexible(
-                            child: Text(
-                              product.categoryName,
-                              style: TextStyle(
-                                fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
-                                color: Colors.blue[700],
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            product.categoryName,
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
+                              color: Colors.blue[700],
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),

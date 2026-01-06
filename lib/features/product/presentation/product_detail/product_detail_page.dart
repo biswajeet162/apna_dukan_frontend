@@ -19,6 +19,8 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   int _selectedImageIndex = 0;
+  bool _isDescriptionExpanded = false;
+  int _quantity = 1;
 
   @override
   void initState() {
@@ -31,6 +33,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
+      bottomNavigationBar: _buildBottomBar(context),
       body: Consumer<ProductProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.productDetail == null) {
@@ -220,6 +224,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ],
                       ),
                       const SizedBox(height: 16),
+                      Divider(color: Colors.grey.shade300, height: 32),
                       // Price
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
@@ -264,71 +269,96 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ],
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      // Stock Status
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
+                      const SizedBox(height: 20),
+                      // Stock + Category quick info
+                      Row(
                         children: [
                           Icon(
                             product.stock > 0 ? Icons.check_circle : Icons.cancel,
                             color: product.stock > 0 ? Colors.green : Colors.red,
-                            size: MediaQuery.of(context).size.width < 290 ? 18 : 24,
+                            size: 20,
                           ),
-                          SizedBox(width: MediaQuery.of(context).size.width < 290 ? 6 : 8),
-                          Text(
-                            product.stock > 0
-                                ? 'In Stock (${product.stock} available)'
-                                : 'Out of Stock',
-                            style: TextStyle(
-                              fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
-                              color: product.stock > 0 ? Colors.green : Colors.red,
-                              fontWeight: FontWeight.w500,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              product.stock > 0
+                                  ? 'In Stock (${product.stock} available)'
+                                  : 'Out of Stock',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: product.stock > 0 ? Colors.green : Colors.red,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      // Category
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
+                      const SizedBox(height: 12),
+                      Row(
                         children: [
-                          Text(
-                            'Category: ',
-                            style: TextStyle(
-                              fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
-                              fontWeight: FontWeight.w500,
+                          const Icon(Icons.category, size: 20, color: Colors.blueGrey),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              product.categoryName,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          Text(
-                            product.categoryName,
-                            style: TextStyle(
-                              fontSize: MediaQuery.of(context).size.width < 290 ? 14 : 16,
-                              color: Colors.blue[700],
-                            ),
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      // Description
-                      const Text(
-                        'Description',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Divider(color: Colors.grey.shade300, height: 32),
+                      // Description collapsible
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Description',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _isDescriptionExpanded = !_isDescriptionExpanded;
+                              });
+                            },
+                            child: Text(_isDescriptionExpanded ? 'Show less' : 'Show more'),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        product.description,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[700],
-                          height: 1.5,
+                      AnimatedCrossFade(
+                        firstChild: Text(
+                          product.description,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[700],
+                            height: 1.5,
+                          ),
                         ),
+                        secondChild: Text(
+                          product.description,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[700],
+                            height: 1.5,
+                          ),
+                        ),
+                        crossFadeState: _isDescriptionExpanded
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
+                        duration: const Duration(milliseconds: 200),
                       ),
-                      const SizedBox(height: 24),
+                      Divider(color: Colors.grey.shade300, height: 32),
                       // Related products
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -374,6 +404,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             },
                           ),
                         ),
+                      Divider(color: Colors.grey.shade300, height: 32),
+                      // Reviews & comments placeholder
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text(
+                            'Reviews & Comments',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      _buildMockReviewCard(),
                       const SizedBox(height: 100), // Space for bottom button
                     ],
                   ),
@@ -382,6 +428,128 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _quantity = (_quantity - 1).clamp(1, 999);
+                      });
+                    },
+                    icon: const Icon(Icons.remove),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      _quantity.toString(),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _quantity = (_quantity + 1).clamp(1, 999);
+                      });
+                    },
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: SizedBox(
+                height: 52,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pink,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                  label: const Text(
+                    'Add to Cart',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    // TODO: integrate cart add logic
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Added $_quantity item(s) to cart')),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMockReviewCard() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Row(
+            children: [
+              CircleAvatar(radius: 16, backgroundColor: Colors.blueGrey, child: Text('A', style: TextStyle(color: Colors.white))),
+              SizedBox(width: 8),
+              Text('Alex M.', style: TextStyle(fontWeight: FontWeight.w600)),
+              Spacer(),
+              Icon(Icons.star, color: Colors.amber, size: 18),
+              Icon(Icons.star, color: Colors.amber, size: 18),
+              Icon(Icons.star, color: Colors.amber, size: 18),
+              Icon(Icons.star, color: Colors.amber, size: 18),
+              Icon(Icons.star_half, color: Colors.amber, size: 18),
+            ],
+          ),
+          SizedBox(height: 8),
+          Text(
+            'The sneakers are super comfortable and look great. The sizing runs true and cushioning is perfect for daily runs.',
+            style: TextStyle(color: Colors.black87, height: 1.4),
+          ),
+        ],
       ),
     );
   }

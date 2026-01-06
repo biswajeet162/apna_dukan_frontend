@@ -19,6 +19,9 @@ class ProductProvider extends ChangeNotifier {
   String? _error;
   List<ProductListModel> _products = [];
   ProductDetailModel? _productDetail;
+  List<ProductListModel> _relatedProducts = [];
+  bool _isRelatedLoading = false;
+  String? _relatedError;
   PaginatedResponse<ProductListModel>? _paginatedResponse;
   int _currentPage = 0;
   final int _pageSize = 20;
@@ -29,6 +32,9 @@ class ProductProvider extends ChangeNotifier {
   String? get error => _error;
   List<ProductListModel> get products => _products;
   ProductDetailModel? get productDetail => _productDetail;
+  List<ProductListModel> get relatedProducts => _relatedProducts;
+  bool get isRelatedLoading => _isRelatedLoading;
+  String? get relatedError => _relatedError;
   bool get hasMore => _paginatedResponse?.hasNext ?? false;
 
   /// Load products with pagination
@@ -90,6 +96,10 @@ class ProductProvider extends ChangeNotifier {
 
       _productDetail = await _repository.getProductById(productId);
       _error = null;
+      notifyListeners();
+
+      // Fetch related products after successfully loading product detail
+      await loadRelatedProducts(productId);
     } on NetworkException catch (e) {
       _error = e.message;
       _productDetail = null;
@@ -98,6 +108,27 @@ class ProductProvider extends ChangeNotifier {
       _productDetail = null;
     } finally {
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Load related products for a given product
+  Future<void> loadRelatedProducts(int productId) async {
+    try {
+      _isRelatedLoading = true;
+      _relatedError = null;
+      notifyListeners();
+
+      _relatedProducts = await _repository.getRelatedProducts(productId);
+      _relatedError = null;
+    } on NetworkException catch (e) {
+      _relatedError = e.message;
+      _relatedProducts = [];
+    } catch (e) {
+      _relatedError = 'An unexpected error occurred: ${e.toString()}';
+      _relatedProducts = [];
+    } finally {
+      _isRelatedLoading = false;
       notifyListeners();
     }
   }

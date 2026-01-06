@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
 import '../../../../core/navigation/app_navigator.dart';
+import '../widgets/product_card_enhanced.dart';
 
 /// Product detail page - shows product details
 class ProductDetailPage extends StatefulWidget {
@@ -327,6 +328,52 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           height: 1.5,
                         ),
                       ),
+                      const SizedBox(height: 24),
+                      // Related products
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text(
+                            'Related products',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      if (provider.isRelatedLoading)
+                        const Center(child: CircularProgressIndicator())
+                      else if (provider.relatedError != null)
+                        Text(
+                          provider.relatedError!,
+                          style: const TextStyle(color: Colors.red),
+                        )
+                      else if (provider.relatedProducts.isEmpty)
+                        const Text('No related products found right now.')
+                      else
+                        SizedBox(
+                          height: 260,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: provider.relatedProducts.length,
+                            separatorBuilder: (_, __) => const SizedBox(width: 12),
+                            itemBuilder: (context, index) {
+                              final relatedProduct = provider.relatedProducts[index];
+                              return SizedBox(
+                                width: 190,
+                                child: ProductCardEnhanced(
+                                  product: relatedProduct,
+                                  onTap: () => AppNavigator.toProductDetail(
+                                    context,
+                                    relatedProduct.id,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       const SizedBox(height: 100), // Space for bottom button
                     ],
                   ),

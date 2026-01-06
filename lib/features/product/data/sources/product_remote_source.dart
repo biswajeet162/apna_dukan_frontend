@@ -103,6 +103,27 @@ class ProductRemoteSource {
     }
   }
 
+  /// Fetch related products for a product
+  Future<List<ProductListModel>> getRelatedProducts(int productId) async {
+    try {
+      final response = await _apiClient.get<List<dynamic>>(
+        ApiEndpoints.productRelated(productId),
+        fromJson: (data) => data is List ? data : <dynamic>[],
+      );
+
+      if (!response.success || response.data == null) {
+        throw NetworkException(response.message);
+      }
+
+      return response.data!
+          .map((json) => ProductListModel.fromJson(json is Map ? Map<String, dynamic>.from(json) : <String, dynamic>{}))
+          .toList();
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw NetworkException('Failed to fetch related products: ${e.toString()}');
+    }
+  }
+
   /// Fetch products by category
   Future<List<ProductListModel>> getProductsByCategory(
     int categoryId, {

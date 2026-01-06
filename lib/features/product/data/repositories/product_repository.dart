@@ -42,6 +42,17 @@ class ProductRepository {
     }
   }
 
+  /// Get related products
+  Future<List<ProductListModel>> getRelatedProducts(int productId) async {
+    try {
+      return await _remoteSource.getRelatedProducts(productId);
+    } on NetworkException {
+      rethrow;
+    } catch (e) {
+      throw NetworkException('Unexpected error: ${e.toString()}');
+    }
+  }
+
   /// Get products by category
   Future<List<ProductListModel>> getProductsByCategory(
     int categoryId, {

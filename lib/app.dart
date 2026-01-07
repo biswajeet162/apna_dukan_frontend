@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'core/network/api_client.dart';
 import 'core/routes/app_routes.dart';
 import 'core/widgets/viewport_fix.dart';
+import 'features/splash/presentation/splash_page.dart';
 import 'features/product/data/sources/product_remote_source.dart';
 import 'features/product/data/repositories/product_repository.dart';
 import 'features/product/data/sources/category_remote_source.dart';
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        initialRoute: AppRoutes.dashboard,
+        home: const SplashPage(),
         onGenerateRoute: AppRoutes.generateRoute,
         // Enable web URL handling and viewport fix
         builder: (context, child) {

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
@@ -21,6 +23,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   int _selectedImageIndex = 0;
   bool _isDescriptionExpanded = false;
   int _quantity = 1;
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -28,6 +31,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductProvider>().getProductById(widget.productId);
     });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -88,33 +97,102 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 automaticallyImplyLeading: false,
                 flexibleSpace: FlexibleSpaceBar(
                   background: safeImageUrls.isNotEmpty
-                      ? PageView.builder(
-                          itemCount: safeImageUrls.length,
-                          onPageChanged: (index) {
-                            if (mounted) {
-                              setState(() {
-                                _selectedImageIndex = index.clamp(0, safeImageUrls.length - 1).toInt();
-                              });
-                            }
-                          },
-                          itemBuilder: (context, index) {
-                            if (index >= 0 && index < safeImageUrls.length) {
-                              return Image.network(
-                                safeImageUrls[index],
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey[200],
-                                    child: const Icon(Icons.image_not_supported),
+                      ? Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            PageView.builder(
+                              controller: _pageController,
+                              itemCount: safeImageUrls.length,
+                              onPageChanged: (index) {
+                                if (mounted) {
+                                  setState(() {
+                                    _selectedImageIndex = index.clamp(0, safeImageUrls.length - 1).toInt();
+                                  });
+                                }
+                              },
+                              itemBuilder: (context, index) {
+                                if (index >= 0 && index < safeImageUrls.length) {
+                                  return Image.network(
+                                    safeImageUrls[index],
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        color: Colors.grey[200],
+                                        child: const Icon(Icons.image_not_supported),
+                                      );
+                                    },
                                   );
-                                },
-                              );
-                            }
-                            return Container(
-                              color: Colors.grey[200],
-                              child: const Icon(Icons.image_not_supported),
-                            );
-                          },
+                                }
+                                return Container(
+                                  color: Colors.grey[200],
+                                  child: const Icon(Icons.image_not_supported),
+                                );
+                              },
+                            ),
+                            if (safeImageUrls.length > 1)
+                              Positioned.fill(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const SizedBox(width: 8),
+                                    _buildBlurArrow(
+                                      isLeft: true,
+                                      enabled: _selectedImageIndex > 0,
+                                      onTap: () {
+                                        if (_selectedImageIndex > 0) {
+                                          final target = _selectedImageIndex - 1;
+                                          _pageController.animateToPage(
+                                            target,
+                                            duration: const Duration(milliseconds: 250),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        }
+                                      },
+                                    ),
+                                    const Spacer(),
+                                    _buildBlurArrow(
+                                      isLeft: false,
+                                      enabled: _selectedImageIndex < safeImageUrls.length - 1,
+                                      onTap: () {
+                                        if (_selectedImageIndex < safeImageUrls.length - 1) {
+                                          final target = _selectedImageIndex + 1;
+                                          _pageController.animateToPage(
+                                            target,
+                                            duration: const Duration(milliseconds: 250),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        }
+                                      },
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
+                              ),
+                            if (safeImageUrls.length > 1)
+                              Positioned(
+                                bottom: 16,
+                                left: 0,
+                                right: 0,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(safeImageUrls.length, (index) {
+                                    final bool isActive = index == _selectedImageIndex;
+                                    return AnimatedContainer(
+                                      duration: const Duration(milliseconds: 200),
+                                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                                      width: isActive ? 16 : 8,
+                                      height: 8,
+                                      decoration: BoxDecoration(
+                                        color: isActive
+                                            ? Colors.white
+                                            : Colors.white.withOpacity(0.4),
+                                        borderRadius: BorderRadius.circular(999),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                              ),
+                          ],
                         )
                       : Container(
                           color: Colors.grey[200],
@@ -139,52 +217,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Image Indicators
-                      if (safeImageUrls.length > 1)
-                        SizedBox(
-                          height: 60,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: safeImageUrls.length,
-                            itemBuilder: (context, index) {
-                              if (index < 0 || index >= safeImageUrls.length) {
-                                return const SizedBox.shrink();
-                              }
-                              return GestureDetector(
-                                onTap: () {
-                                  if (mounted) {
-                                    setState(() {
-                                      _selectedImageIndex = index.clamp(0, safeImageUrls.length - 1).toInt();
-                                    });
-                                  }
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 8),
-                                  width: 60,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: _selectedImageIndex == index
-                                          ? Colors.blue
-                                          : Colors.grey,
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(6),
-                                    child: Image.network(
-                                      safeImageUrls[index],
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return const Icon(Icons.image);
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
                       const SizedBox(height: 16),
                       // Product Name
                       Text(
@@ -550,6 +582,40 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             style: TextStyle(color: Colors.black87, height: 1.4),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBlurArrow({
+    required bool isLeft,
+    required bool enabled,
+    required VoidCallback onTap,
+  }) {
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.4,
+      child: IgnorePointer(
+        ignoring: !enabled,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: InkWell(
+              onTap: onTap,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.25),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isLeft ? Icons.chevron_left : Icons.chevron_right,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

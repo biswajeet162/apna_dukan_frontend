@@ -59,7 +59,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const SplashPage(),
+        // Start at splash route once when the app launches
+        initialRoute: AppRoutes.splash,
         onGenerateRoute: AppRoutes.generateRoute,
         // Enable web URL handling and viewport fix
         builder: (context, child) {

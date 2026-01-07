@@ -58,7 +58,9 @@ class AppBottomNavigationBar extends StatelessWidget {
   bool _isCurrentRoute(BuildContext context, String routeName) {
     final currentRoute = ModalRoute.of(context)?.settings.name;
     if (routeName == AppRoutes.home) {
-      return currentRoute == AppRoutes.home || currentRoute == AppRoutes.products;
+      return currentRoute == AppRoutes.home ||
+          currentRoute == AppRoutes.products ||
+          currentRoute == AppRoutes.dashboard;
     }
     return currentRoute == routeName;
   }
@@ -73,6 +75,7 @@ class AppBottomNavigationBar extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     return Expanded(
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () {
           switch (index) {
             case 0:

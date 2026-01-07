@@ -6,6 +6,7 @@ import '../../features/category/presentation/category_page.dart';
 import '../../features/orders/order_routes.dart';
 import '../../features/profile/presentation/profile_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
+import '../../features/splash/presentation/splash_page.dart';
 
 /// Centralized app routing configuration
 class AppRoutes {
@@ -69,8 +70,9 @@ class AppRoutes {
 
     // Handle splash route
     if (path == splash) {
-      return AuthRoutes.generateRoute(
-        RouteSettings(name: AuthRoutes.splash),
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (_) => const SplashPage(),
       );
     }
 

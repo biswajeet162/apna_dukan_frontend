@@ -9,46 +9,51 @@ class AppBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Container(
-          height: 65,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                context,
-                Icons.home,
-                'Home',
-                0,
-                _isCurrentRoute(context, AppRoutes.home),
-              ),
-              _buildNavItem(
-                context,
-                Icons.category_outlined,
-                'Category',
-                1,
-                _isCurrentRoute(context, AppRoutes.categories),
-              ),
-              _buildNavItem(
-                context,
-                Icons.shopping_bag_outlined,
-                'Order',
-                2,
-                _isCurrentRoute(context, AppRoutes.orders),
-              ),
-            ],
+    // Lock text scale so icons/labels stay visually consistent across pages
+    final mediaQuery = MediaQuery.of(context);
+    return MediaQuery(
+      data: mediaQuery.copyWith(textScaleFactor: 1.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Container(
+            height: 65,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(
+                  context,
+                  Icons.home,
+                  'Home',
+                  0,
+                  _isCurrentRoute(context, AppRoutes.home),
+                ),
+                _buildNavItem(
+                  context,
+                  Icons.category_outlined,
+                  'Category',
+                  1,
+                  _isCurrentRoute(context, AppRoutes.categories),
+                ),
+                _buildNavItem(
+                  context,
+                  Icons.shopping_bag_outlined,
+                  'Order',
+                  2,
+                  _isCurrentRoute(context, AppRoutes.orders),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -72,19 +77,16 @@ class AppBottomNavigationBar extends StatelessWidget {
     int index,
     bool isSelected,
   ) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    const double iconSize = 22;
+    const double labelFontSize = 11;
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
           switch (index) {
             case 0:
-              // Home - navigate to home route
-              AppNavigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.home,
-                predicate: (route) => route.settings.name == AppRoutes.home,
-              );
+              // Home - treat as dashboard and keep route name as '/dashboard'
+              AppNavigator.toHomeClearStack(context);
               break;
             case 1:
               // Category
@@ -103,7 +105,7 @@ class AppBottomNavigationBar extends StatelessWidget {
             Icon(
               icon,
               color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
-              size: screenWidth < 290 ? 20 : 24,
+              size: iconSize,
             ),
             const SizedBox(height: 4),
             Container(
@@ -119,7 +121,7 @@ class AppBottomNavigationBar extends StatelessWidget {
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: screenWidth < 290 ? 9 : 11,
+                  fontSize: labelFontSize,
                   color: isSelected ? AppColors.primaryRed : AppColors.textGrey,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
